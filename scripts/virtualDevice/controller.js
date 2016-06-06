@@ -5,26 +5,13 @@ execute=anonymous
   **/ 
  var log = require("log")
 log.setLevel("debug")
-var messaging = require("pubsub")
+var clientLib = require("virtualDevice/backend/client")
 
-function Client() {
-  this.getMessage = function() {return JSON.parse(request.rawBody)}
-  this.getRawMessage = function() {return request.rawBody}
-  
-  var deviceId = this.getMessage().deviceId
-    
-  this.send = function(widgetId, payload) {
-	messaging.publish("virtualDeviceReceive", 
-                      JSON.stringify({
-      					"id":widgetId, 
-      					"deviceId": deviceId, 
-      					"payload":payload}));
-  }
-}
-
-var client = new Client()
+var client = new clientLib.Client()
 
 var msg = client.getMessage()
+
+client.setDevice(msg.deviceId)
 
 switch(msg.deviceId) {
   case "simple":
