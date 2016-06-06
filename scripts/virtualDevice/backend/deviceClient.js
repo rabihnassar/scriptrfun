@@ -11,5 +11,9 @@ function send(widgetId, payload) {
 }
 
 function getMessage() {
+	return JSON.parse(request.rawBody)
+}
+
+function getRawMessage() {
 	return request.rawBody
 }			
