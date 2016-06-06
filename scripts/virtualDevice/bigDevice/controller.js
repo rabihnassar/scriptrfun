@@ -3,9 +3,7 @@
 write=nobody
 execute=anonymous 
   **/ 
- var client = require("virtualDevice/backend/deviceClient")
-
-function process(msg) {
+ function process(client, msg) {
     log.debug(msg)
     client.send("display1", JSON.stringify(msg))
     client.send("btn", msg.value)

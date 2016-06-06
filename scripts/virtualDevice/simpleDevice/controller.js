@@ -3,12 +3,10 @@
 write=nobody
 execute=anonymous 
   **/ 
- var client = require("virtualDevice/backend/deviceClient")
-
-function process(msg) {
+ function process(client, msg) {
     switch(msg.id) {
         case "slider":
-            client.send("display", "Value "+msg.value)
+            client.send("display", "Value "+msg.value*2)
             break;
         case "send":
             client.send("display", "you pressed send.")
