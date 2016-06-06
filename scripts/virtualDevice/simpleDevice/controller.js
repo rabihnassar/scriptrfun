@@ -13,6 +13,9 @@ function process(msg) {
         case "send":
             client.send("display", "you pressed send.")
             break;
+	    case "onOff":
+            client.send("display", "switch is: " + msg.value)
+            break;
         default:
             break;
     }   
