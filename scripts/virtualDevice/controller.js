@@ -3,7 +3,9 @@
 write=nobody
 execute=anonymous 
   **/ 
- var log = require("log")
+ // SUBSCRIBE THIS SCRIPT TO virtualDeviceSend channel
+
+var log = require("log")
 log.setLevel("debug")
 var clientLib = require("virtualDevice/backend/client")
 
