@@ -1,0 +1,15 @@
+ //Update bounding box as user drags
+var log = require("log");
+log.setLevel("INFO");
+var params = JSON.parse(request.rawBody);
+log.info(request.rawBody)
+
+//Update only if receiving message to update
+
+if(params["msgId"] && params["msgId"] == "update_switch") {
+}
+
+
+if(params["msgId"] && params["msgId"] == "load_switch_data") {
+}
+

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" ng-app="myApp">
+  <head>
+    <meta charset="utf-8">
+    <title>My HTML File</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
+    
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+ 	<script src="//cdn.rawgit.com/gdi2290/angular-websocket/v1.0.9/angular-websocket.min.js"></script>
+    <script src="//rabih.scriptrapps.io/scriptrUI/channelManager.js"></script>
+    
+    <!-- Importing any angularsjs widget library -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+  	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.js"></script>
+   
+    <body>  
+       <div ng-controller="SwitchDemoCtrl" ng-init="init()"> 
+               <md-switch ng-model="data.cb1" aria-label="Switch 1"  ng-change="onChange(data.cb1)">
+                  Switch 1: {{ data.cb1 }}
+                </md-switch>
+      </div>
+   </body>
+   <script>
+     var myApp = angular.module('myApp', ["channelManager", "ngMaterial"]);
+
+     myApp.config(function (WSProvider) {
+        WSProvider.setWsUrl('wss://api.scriptrapps.io/TThDN0E0OURCQQ==');
+  		WSProvider.setPublishChannel("scriptrUI");
+		WSProvider.setSubscribeChannel("scriptrUI");
+	});
+
+ 	 myApp.controller('SwitchDemoCtrl', function($scope, $controller) {
+		angular.extend(this, $controller('ScriptrRLTController', {$scope: $scope}));
+        $scope.handleMessage = function() {
+           if($scope.model["msgId"] == "switch_data"){
+             if($scope.model["cb1"] || $scope.model["cb4"]) {
+                $scope.data = $scope.model;
+             }
+           }
+        }
+      
+      // $scope.data = {cb1:true}
+
+       
+       $scope.init = function() {
+       }
+     
+      $scope.onChange = function(cbState) {
+        $scope.publish({"msgId": "update_switch","value": {"cb1": $scope.data.cb1}});
+      };
+    });
+     
+
+  </script>
+</html>
