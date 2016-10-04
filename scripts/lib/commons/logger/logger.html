@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<title>logger</title>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+
+  	<script src="config.js"></script>
+    <style>
+      .timestamp {color: #999; margin-right: 15px;}
+      .txt0 {color: black}
+      .txt1 {color: #5274aa;}
+      .txt2 {color: #5274aa;}
+      .txt3 {color: red}
+      .txt4 {color: red}
+      
+      .level {width: 70px; display:inline-block;}
+      
+      body {background: #fafafa;}
+  	</style>
+    <script>
+      var logLevel = ["LOG", "INFO", "DEBUG", "WARN", "ERROR"]
+      
+      function printMessage(msg) {
+        $ ("#log").append(msg)
+        $(window).scrollTop($(document).height())
+      }
+      
+      function template(msg) {
+        return "<div class='message'><span class='timestamp'>"+msg.timestamp+"</span><div class='level'>"+logLevel[msg.level]+"</div><span class='txt"+msg.level+"'>"+msg.txt+"</span></div>" 
+      }
+      
+      channelManager = new(function(){
+          var _boundWidgets = {}
+
+          // Open websocket to scriptr
+          var client = new WebSocket("wss://api.scriptr.io/" + SCRIPTR_TOKEN);
+
+          // Subscribe to events sent by scriptr to device
+          client.onopen = function (event) {
+              client.send(JSON.stringify({
+                  "method":"Subscribe",
+                  "params":{
+                      "channel": RECEIVE_CHANNEL
+                  }
+              }), client);
+          }
+
+          // Receive message and display
+          client.onmessage = function(event) {
+            var msg = JSON.parse(event.data)
+            if (msg.type=='debug') printMessage(template(msg)) 
+          }
+      }) 
+      
+      $(function() {
+      })
+  	</script>
+</head>
+
+<body>
+  <h1>scriptr.io websockets based degbugger</h1>
+  <pre id="log"></pre>  
+</body>
+
+</html>

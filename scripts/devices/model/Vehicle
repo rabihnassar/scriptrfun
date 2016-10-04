@@ -1,0 +1,18 @@
+import("model.Device")
+
+function Vehicle() {
+  
+  	this.running = false
+  
+	Device.apply(this, arguments)
+
+	this.start = function(name) {
+		this.running = "true"
+        this.save()
+	},
+	
+	this.stop = function() {
+		this.running = "false"
+        this.save()
+	}
+}

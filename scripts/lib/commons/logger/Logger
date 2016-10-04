@@ -1,0 +1,54 @@
+var log = require("log");
+var messaging = require("pubsub")
+
+function Logger(scope) {
+  this.levelIndex = 4
+  this.level = "DEBUG"
+  
+  this.setLogLevel = function (level) {
+    var levels = {DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3}
+    this.level = level
+    this.levelIndex = levels[level]
+  }
+  
+  var msg = function(args) {
+    var s="" 
+	
+    for (var i=0; i<args.length; i++) {
+      var obj = args[i]
+      if (obj !== null && typeof obj === 'object') s+=JSON.stringify(obj)+"\t"; else s+=obj+"\t"
+    }
+    return s
+  }
+  
+  var logLevels = ['debug', 'info', 'warn', 'error']
+
+  for (var i=0; i<logLevels.length; i++) {
+    this[logLevels[i]] = (function(level) {
+      return function() {
+        if (this.levelIndex>level) return
+
+        var logTxt = msg(arguments)
+        console[logLevels[level]](logTxt)
+        
+        var msgTxt = JSON.stringify({type: "debug", timestamp: new Date(), level: level, txt: logTxt})
+        messaging.publish("debug", msgTxt)
+
+        log.setLevel("DEBUG") //levels are ERROR | WARN | INFO | DEBUG | OFF
+        log[logLevels[level]](logTxt);
+      }
+    })(i)
+  }
+    
+  scope.logger = {
+    setLevel: this.setLogLevel,
+
+    debug: this.debug,
+    info: this.info,
+    warn: this.warn,
+    error: this.error,
+    log: this.debug
+  }
+  
+  return scope.logger
+}

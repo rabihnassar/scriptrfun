@@ -1,0 +1,14 @@
+import("model.Vehicle")
+import("model.Wheel")
+
+function Car() {
+  	// schema information
+    this["seats.apsdb.fieldType"] = "numeric"
+
+  	this.running = "false"
+    this.seats = 4
+  
+//    this.wheel1 = new Wheel()
+    
+	Vehicle.apply(this, arguments)
+}

@@ -1,0 +1,21 @@
+import("core.DeviceRepositoryAdaptor")
+
+function DeviceFactory() {
+    this.get = function(id) {
+      
+      var adaptor = new DeviceRepositoryAdaptor()
+      
+      // get the ID from the request id it's not explicitly passed
+      if (!id) id = request.parameters.id
+	  var model = adaptor.load(id)
+      if (!model) return null
+      
+      // Load device class dynamically
+      var deviceClass = import(model.cls)
+
+      // Instantiate a new device of deviceClass
+      var device = new deviceClass(model)
+
+      return device
+    }
+}

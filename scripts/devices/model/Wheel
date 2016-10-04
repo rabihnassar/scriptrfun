@@ -1,0 +1,6 @@
+function Wheel(model) {
+  	// schema information
+    this["seats.apsdb.fieldType"] = "numeric"
+
+    this.pressure = 30
+}

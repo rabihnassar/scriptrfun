@@ -1,0 +1,73 @@
+/*
+ *  Tries to require a certain script specificed by @className 
+ *	 in multiple locations specified by @classPath
+ *	By convention, the scripts loaded by this function, should 
+ *	 contain at least one defined function with the same name as the Script
+ *	The function will be installed in @scope
+ *
+ *	@className 	name of the scripts to require
+ *	@classPath 	array of possible locations to try to require the scripts
+ *	@scope		scope to install function
+ *	@reload optional	forces reload of an already loaded Class
+ *
+ */
+function import(className, classPath, scope, base, reload) {
+    // The class is loaded into the current scope, now you can do 'new Class()'
+	var loadedClass
+
+    var namePath = className.replace(/\./g, "/")
+    var namePathComponents = className.split(".")
+    var _className = namePathComponents[namePathComponents.length-1]
+    
+    if (scope[_className] && !reload) return  
+    if (scope.logger) logger.debug("ClassLoader - loading class: " + className)
+
+    for (var i=0; i<classPath.length; i++) {
+      try {
+		  if (scope.logger) logger.debug("ClassLoader - attempting require('" + base+classPath[i]+namePath + "')")
+          loadedClass = require(base+classPath[i]+namePath)[_className]
+		  if (scope.logger) logger.debug("ClassLoader - module '" + base+classPath[i]+namePath + "' loaded")
+          break
+      } catch (e) {}
+    }
+  
+	if (!loadedClass) {
+      if (scope.logger) logger.error("ClassLoader - Class '" + className + "' not found in classpath"); 
+      else console.logger("ClassLoader - Class '" + className + "' not found in classpath")  
+      return null
+    }
+  	
+  	scope[_className] = loadedClass
+	if (scope.logger) logger.debug("ClassLoader - Class '"+_className+"' installed in scope.")
+
+    // return new class in case you need a quick reference
+    return loadedClass
+}
+
+/* 		Loader provides a better require() statement similar to java  
+ *		@scope: 	namespace where classes should be loaded 
+ *		@classpath:	an array of possible filepath locations of classes to be loaded
+ */
+function Loader(scope, classpath, base){
+  (new (function(scope){
+    return function(){
+      scope.import = function(className, reload) {
+        return import(className, classpath, scope, base, reload) 
+      }
+      // We need a logger by default
+      scope.import("commons.logger.Logger")
+      new scope.Logger(scope)
+    }
+  })(scope))()
+}
+
+/*	method to initialise the Loader, it should be called immediately after the loader lib is required in a script 
+ *		@scope: 	namespace where classes should be loaded 
+ *		@classpath:	an array of possible filepath locations of classes to be loaded
+ *	
+ */
+function init(scope, classpath, base) {
+  	var loader = new Loader(scope, classpath, base)
+    
+	return loader  
+}
