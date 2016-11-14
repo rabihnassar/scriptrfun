@@ -1,4 +1,4 @@
-import("core.DeviceRepositoryAdaptor")
+import("devices.DeviceRepositoryAdaptor")
 
 function DeviceFactory() {
     this.get = function(id) {
@@ -9,6 +9,8 @@ function DeviceFactory() {
       if (!id) id = request.parameters.id
 	  var model = adaptor.load(id)
       if (!model) return null
+      
+//      if (!hasAccess(user, model.accessACL)) return null
       
       // Load device class dynamically
       var deviceClass = import(model.cls)

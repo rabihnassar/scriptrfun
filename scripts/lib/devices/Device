@@ -1,0 +1,46 @@
+import("devices.DeviceRepositoryAdaptor")
+
+function Device(model) {
+	var adaptor = new DeviceRepositoryAdaptor()
+
+    // Device attributes 
+  	this.enabled = "true"
+    this.location = {lat:0.0, long:0.0}
+    
+    // schema
+    this["location.apsdb.fieldType"] = "geospatial"
+    
+    this.serialize = function() {
+      var model = {}
+      for (var k in this) {
+        if (!(this[k] instanceof Function)) {
+          model[k] = this[k]
+        }
+        model.location = this.location.lat+","+this.location.long
+      }
+      return model
+    }
+
+    this.deserialize = function(model) {
+      // Apply model to device
+      for (var k in model) {
+        if (!(this[k] instanceof Function)) this[k] = model[k]
+      }
+    }
+
+  	this.deserialize(model)
+  	
+    // Getters and Setters
+	this.enable = function() {this.enabled = "true"; this.save()}
+	this.disable = function() {this.enabled = "false"; this.save()}
+    
+    this.getLocation = function() {return this.location}
+    this.setLocation = function(lat, long) {this.location.lat=lat; this.location.long=long; this.save()}
+    
+    // Device repository 
+    this.save = function() { 
+      var model = this.serialize()
+	  return adaptor.save(model)
+    }    
+} 
+

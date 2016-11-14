@@ -1,4 +1,5 @@
-import("model.Device")
+import("devices.Device")
+//import("core.ACLEvaluator")
 
 function Vehicle() {
   
@@ -7,6 +8,7 @@ function Vehicle() {
 	Device.apply(this, arguments)
 
 	this.start = function(name) {
+//      	      if (!ACLEvaluator.hasAccess(request.user, this.startVehicleACL)) return null
 		this.running = "true"
         this.save()
 	},

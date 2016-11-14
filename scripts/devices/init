@@ -1,0 +1,30 @@
+var id = "someCar"
+function createTestDevices() {
+    var response = apsdb.callApi("SaveDevice", {
+      id: id,
+      "apsdb.update": "true",
+      name: "Honda Civic",
+      seats: 4,
+      "seats.apsdb.fieldType": "numeric",
+      password: "retard",
+      groups: ["devices"],
+      cls: "model.Car",
+      running: "true"
+      
+    }, null)
+
+    console.log(JSON.stringify(response))
+}
+
+function inspect() {
+      var response = apsdb.callApi("GetDevice", {
+        id: id
+      }, null)
+      
+      console.log(JSON.stringify(response))
+  		return response
+}
+
+//createTestDevices()
+
+return inspect().result.device

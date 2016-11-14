@@ -1,31 +1,9 @@
 require("/lib/core/ClassLoader").init(this, ["./", "../lib/", "./lib/"], "/devices/")
 logger.setLevel("DEBUG")
 
-import("model.DeviceFactory")
-
-/*	fetches a device model from the device repository and executes a method on it based on its class
- *		@params		map that should contain at least id and method 
- *
- */
-function execute(params) {
-	// fetch deviceModel by DeviceID from device Database, load will pick ID from request.
-  	// This is important to retrieve the device classname and instantiate the proper device class for the model 
-	var device = (new DeviceFactory()).get(params.id)  
-    
-    // If device model exists
-    if (device) {
-      // invoke desired method
-      device[params.method](params)
-
-      return device
-    } else {
-      return {
-        errorMessage: "Device doesn't exist"
-      }
-    }
-}
+import("devices.Service")
 
 if (!request.parameters.id) logger.error("id missing in request parameters.")
 if (!request.parameters.method) logger.warn("method missing in request parameters.")
 
-return execute(request.parameters)
+return Service(request.parameters)
