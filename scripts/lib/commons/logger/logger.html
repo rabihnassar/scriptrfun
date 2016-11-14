@@ -33,10 +33,9 @@
       function template(msg) {
         return "<div class='message'><span class='timestamp'>"+msg.timestamp+"</span><div class='level'>"+logLevel[msg.level]+"</div><span class='txt"+msg.level+"'>"+msg.txt+"</span></div>" 
       }
+
       
       channelManager = new(function(){
-          var _boundWidgets = {}
-
           // Open websocket to scriptr
           var client = new WebSocket("wss://api.scriptr.io/" + SCRIPTR_TOKEN);
 
@@ -53,11 +52,37 @@
           // Receive message and display
           client.onmessage = function(event) {
             var msg = JSON.parse(event.data)
-            if (msg.type=='debug') printMessage(template(msg)) 
+            if (typeof(msg.type) != "undefined") printMessage(template(msg)) 
           }
       }) 
-      
+     
       $(function() {
+        $.urlParam = function(name){
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            if (results==null){
+               return null;
+            }
+            else{
+               return results[1] || 0;
+            }
+        } 
+
+        var url = "https://"+$.urlParam("s")
+        var token = $.urlParam("t")
+        printMessage("Invoking: "+url+", with token: "+token)
+        if (url) {
+          $.ajax({
+              url: url,
+              headers: {
+                  'Authorization':'bearer '+token
+              },
+              method: 'POST',
+              dataType: 'json',
+              success: function(data){
+                console.log('succes: '+data);
+              }
+            });
+        }
       })
   	</script>
 </head>
