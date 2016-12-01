@@ -1,6 +1,10 @@
-function Wheel(model) {
-  	// schema information
-    this["seats.apsdb.fieldType"] = "numeric"
+import("devices.Device")
 
-    this.pressure = 30
-}
+var Wheel = Class(Device, {
+  constructor: function(model) {
+    Car.$super.call(this, model)
+    this.cls = "model.Wheel"
+    this.set("pressure", 0)
+  }
+})
+

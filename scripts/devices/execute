@@ -1,9 +1,24 @@
-require("/lib/core/ClassLoader").init(this, ["./", "../lib/", "./lib/"], "/devices/")
+require("/lib/framr/Framr").init(this, {classPath: "./lib/;./devices/", quite: true})
 logger.setLevel("DEBUG")
 
 import("devices.Service")
+import("agnes.DeviceRepositoryAdaptor")
 
+logger.debug(JSON.stringify(request.parameters))
 if (!request.parameters.id) logger.error("id missing in request parameters.")
 if (!request.parameters.method) logger.warn("method missing in request parameters.")
 
-return Service(request.parameters)
+var params = {}
+for (var k in request.parameters) params[k] = request.parameters[k]
+delete params.id
+delete params.method
+
+var service = new Service(new agnes.DeviceRepositoryAdaptor())
+
+//var device = service.execute(request.parameters.id, request.parameters.method, params)
+//var device = Service("anotherCar", "update", {oilTemperature: "90", weight: "2T"})
+var device = service.execute("porsche", "start")
+var device = service.execute("porsche", "setSpeed", {speed: 70})
+
+
+return device?device.serialize():null

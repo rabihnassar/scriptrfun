@@ -1,20 +1,27 @@
 import("devices.Device")
-//import("core.ACLEvaluator")
+import("framr.ACLEvaluator")
 
-function Vehicle() {
-  
-  	this.running = false
-  
-	Device.apply(this, arguments)
+var Vehicle = Class(Device, {
+  constructor: function(model) {
+    Vehicle.$super.call(this, model)
+    this.set("cls", "model.Vehicle") 
+  },
 
-	this.start = function(name) {
-//      	      if (!ACLEvaluator.hasAccess(request.user, this.startVehicleACL)) return null
-		this.running = "true"
-        this.save()
-	},
-	
-	this.stop = function() {
-		this.running = "false"
-        this.save()
-	}
-}
+  start: function() {
+	ACLEvaluator.checkPermission({}, "group:deviceOwners")
+    this.set("running", true)
+    this.save()
+  },
+
+  stop: function() {
+	ACLEvaluator.checkPermission({}, "group:deviceOwners")
+    this.set("running", false)
+    this.save()
+  },
+  
+  setSpeed: function(params) {
+	ACLEvaluator.checkPermission({}, "group:deviceOwners")
+    this.set("speed", params.speed)
+    this.save()
+  }
+})

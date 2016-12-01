@@ -1,14 +1,10 @@
 import("model.Vehicle")
-import("model.Wheel")
+//import("model.Wheel")
 
-function Car() {
-  	// schema information
-    this["seats.apsdb.fieldType"] = "numeric"
-
-  	this.running = "false"
-    this.seats = 4
-  
-//    this.wheel1 = new Wheel()
-    
-	Vehicle.apply(this, arguments)
-}
+var Car = Class(Vehicle, {
+  constructor: function(model) {
+    Car.$super.call(this, model)
+    this.set("cls", "model.Car") 
+    this.set("seats", 4)
+  }
+})
