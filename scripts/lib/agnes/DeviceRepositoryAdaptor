@@ -81,9 +81,9 @@ var DeviceRepositoryAdaptor = Class(AbstractRepositoryAdaptor, {
   
   save: function(device) {
     try {
-      this.update(device)
+      this.create(device)
     } catch(e) {
-      if (e.errorCode == "DUPLICATE_DEVICE") this.create(device); 
+      if (e.errorCode == "DUPLICATE_DEVICE") this.update(device); 
       else throw(e)
     }
   },
