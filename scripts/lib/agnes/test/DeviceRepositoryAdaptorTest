@@ -1,0 +1,48 @@
+require("/lib/framr/Framr").init(this, {classPath: "./lib/"})
+
+import("devices.DeviceFactory")
+import("agnes.DeviceRepositoryAdaptor")
+import("devices.Device")
+
+var adaptor = new agnes.DeviceRepositoryAdaptor()
+
+var id = "porsche"
+
+var device = new Device({
+  adaptor: adaptor,
+  model: {
+    id: id,
+    name: id,
+    seats: 4,
+    location: new Location(),
+    lastUpdate: Date()
+  }
+})
+
+
+/*
+var device = {
+  cls: "model.Car",
+  
+  id: id,
+  name: id,
+  groups: ["devices"],
+
+  seats: 4,
+  location: "36.2664, -86.7005", 
+  running: "true",
+
+  lastUpdate: Date()
+}
+*/
+
+adaptor.save(device)
+device.lastUpdate = Date()
+adaptor.update(device, {seats: "numeric"})
+
+
+adaptor.load(id)
+adaptor.query({attributes: "*"})
+adaptor.delete(id)
+
+logger.log("works")

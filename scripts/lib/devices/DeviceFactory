@@ -1,23 +1,31 @@
-import("devices.DeviceRepositoryAdaptor")
+var DeviceFactory = Class({
+  
+  	constructor: function(options) {
+      this.adaptor = options.adaptor
+    },
+      
+    load: function(id) {
+      var model
+      
+      try {
+		model = this.adaptor.load(id)
+      } catch(err) {
+        return null
+      }
 
-function DeviceFactory() {
-    this.get = function(id) {
-      
-      var adaptor = new DeviceRepositoryAdaptor()
-      
-      // get the ID from the request id it's not explicitly passed
-      if (!id) id = request.parameters.id
-	  var model = adaptor.load(id)
-      if (!model) return null
-      
-//      if (!hasAccess(user, model.accessACL)) return null
-      
       // Load device class dynamically
       var deviceClass = import(model.cls)
 
       // Instantiate a new device of deviceClass
-      var device = new deviceClass(model)
+      var device = new deviceClass({adaptor: this.adaptor, model: model})
 
       return device
+    },
+  
+  	new: function(cls, options) {
+      if (!options) options = {}
+      if (!options.adaptor) options.adaptor = this.adaptor
+      var device = new cls(options)
+      return device
     }
-}
+})

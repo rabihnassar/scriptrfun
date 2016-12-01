@@ -1,0 +1,1 @@
+{"acl":{"read":"group:admins","write":"group:admins","execute":"all"},"contentType":"application\/vnd.scriptr-javascript"}

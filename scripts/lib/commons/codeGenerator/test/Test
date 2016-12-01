@@ -1,0 +1,12 @@
+require("/lib/core/ClassLoader").init(this, ["./lib/"])
+logger.setLevel("DEBUG")
+import("commons.codeGenerator.Generator")
+
+var generator = new Generator("http://rabih.scriptrapps.io/lib/commons/codeGenerator/test/template")
+//var generator = new Generator("http://rabih.scriptrapps.io/mashup/backend/templates/mashup")
+var data = {acl: {execute: "all", read: "group:admins", write: "group:admins"}, date:Date()}
+
+//logger.info(template.parse(data))
+
+generator.save("lib/commons/codeGenerator/test/output", data)
+

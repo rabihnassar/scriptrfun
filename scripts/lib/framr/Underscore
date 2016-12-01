@@ -1,0 +1,14 @@
+/* Wrapper around underscore library to allow loading using Framr import
+ *
+ */
+function Underscore() {
+}
+
+/* Framr classloader detects if there's an init function in a class definition file 
+ *  and calls it upon loading the class 
+ *
+ */
+function init(scope) {
+  logger.log("installing _") 
+  scope._ = require("/modules/underscore/underscore.js")._  
+}

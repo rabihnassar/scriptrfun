@@ -1,0 +1,72 @@
+/* 
+ * Loads a template from HTTP Url, parses it using Mustache and creates a new script
+ *  @url: URL of template
+ *
+ *  TODO: this should be done by internal API, if not, a token should be used 
+ */
+function Generator(url /* template URL */) {
+  var _ = require("/modules/underscore/underscore.js")._
+  var Mustache = require("/modules/mustache/mustache.js").Mustache
+  var http = require("http")
+
+  var template
+
+  // Load Mustache template from scriptr 
+  //  TODO: this should be done by internal API, if not, a token should be used 
+  if (url) {
+    var requestObject = {
+      "url": url,
+      "method": "GET" 
+    }
+    template = http.request(requestObject).body
+  } else template = ""
+
+
+  /* Modify template string for an instantiated Generator 
+  */
+  this.setTemplate = function(templateString) {
+    template = templateString
+  }
+
+  /* Parse and retrun a string
+   * @data JS data structure of data to be parsed into template
+   */
+  this.parse = function(data) {
+    logger.debug("data: " + JSON.stringify(data))
+    var output = Mustache.render(template, data)
+    return output
+  }
+
+  /* Parse and save output into a script
+   * @path Path of file to generate, if existing it will be overwritten 
+   * @data JS data structure of data to be parsed into template
+   */
+  this.save = function(path, data) {
+    var code = this.parse(data)
+
+    var params = {
+      "apsdb.scriptName": path,
+      "apsdb.update": "false",
+      "apsdb.script": code
+    }
+
+    var response = apsdb.callApi("SaveScript", params, null)
+    
+    if (response.metadata.status == 'success') {
+      logger.info("Script " + path + " created")
+      return
+    } else {
+      if (response.metadata.statusCode == 400) {
+        // script exists, need to issue update
+        params["apsdb.update"] = "true";
+        
+        response = apsdb.callApi("SaveScript", params, null)
+        if (response.metadata.status == 'success') {
+          logger.info("Script " + path + " updated")
+          return
+        }
+      } 
+    }
+    logger.error("Script " + path + " can't be created, with error message: " + JSON.stringify(response.metadata))
+  }    
+}

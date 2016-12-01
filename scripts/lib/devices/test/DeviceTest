@@ -1,0 +1,19 @@
+require("/lib/framr/Framr").init(this, {classPath: "./lib/"})
+
+import("devices.Device")
+
+var model = {
+  location: new Location("48.8580,2.2951"),
+  id: "testDevice3",
+  name: "testDevice has been made into a car @"+Date()
+}
+
+var d = new Device({model: model})
+
+d.set("temperature", 40)
+
+d.save()
+
+logger.log(d.serialize())
+
+logger.log('works')

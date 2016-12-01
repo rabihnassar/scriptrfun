@@ -1,46 +1,53 @@
 import("devices.DeviceRepositoryAdaptor")
+import("devices.Location")
 
-function Device(model) {
-	var adaptor = new DeviceRepositoryAdaptor()
-
-    // Device attributes 
-  	this.enabled = "true"
-    this.location = {lat:0.0, long:0.0}
+var Device = Class({
+  constructor: function(options) {
+    this.metadata = {}
     
-    // schema
-    this["location.apsdb.fieldType"] = "geospatial"
-    
-    this.serialize = function() {
-      var model = {}
-      for (var k in this) {
-        if (!(this[k] instanceof Function)) {
-          model[k] = this[k]
-        }
-        model.location = this.location.lat+","+this.location.long
-      }
-      return model
-    }
+    if (options) {
+      if (options.adaptor) this.adaptor = options.adaptor
 
-    this.deserialize = function(model) {
-      // Apply model to device
-      for (var k in model) {
-        if (!(this[k] instanceof Function)) this[k] = model[k]
+      if (options.model) {
+        this.metadata = options.model
       }
     }
+    // Mandatory attributes
+    this.metadata.enabled = true,
+    this.metadata.cls = "devices.Device"
+  },
 
-  	this.deserialize(model)
-  	
-    // Getters and Setters
-	this.enable = function() {this.enabled = "true"; this.save()}
-	this.disable = function() {this.enabled = "false"; this.save()}
+  enable: function() {
+    this.metadata.enabled = true
+    this.save()
+  },
+  
+  disable: function() {
+    this.metadata.enabled = false
+    this.save()
+  },
+  
+  set: function(key, value) { // key could be a map
+    if (typeof key == "string") {
+	    this.metadata[key] = value
+    } else if (typeof key == "object") {
+        for (var k in key) this.metadata[k]=key[k]
+    }
+  },
     
-    this.getLocation = function() {return this.location}
-    this.setLocation = function(lat, long) {this.location.lat=lat; this.location.long=long; this.save()}
-    
-    // Device repository 
-    this.save = function() { 
-      var model = this.serialize()
-	  return adaptor.save(model)
-    }    
-} 
+  get: function(key) {
+    return (this.metadata[key])
+  },
+  
+  serialize: function() {
+    return this.metadata
+  },
 
+  save: function() {
+    if (this.adaptor) return this.adaptor.save(this)
+  },
+  
+  delete: function() {
+    if (this.adaptor) return this.adaptor.delete(this)
+  }
+})

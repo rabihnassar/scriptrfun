@@ -4,21 +4,32 @@ import("devices.DeviceFactory")
  *		@params		map that should contain at least id and method 
  *
  */
-function Service(params) {
+
+var Service = Class({
+  constructor: function(adaptor) {
+    this.adaptor = adaptor
+    this.factory = new devices.DeviceFactory({adaptor: adaptor})
+  },
+  
+  execute: function(id, method, params) {
 	// fetch deviceModel by DeviceID from device Database, load will pick ID from request.
   	// This is important to retrieve the device classname and instantiate the proper device class for the model 
-	var device = (new DeviceFactory()).get(params.id)  
     
-    // If device model exists
-    if (device) {
-      // invoke desired method
-      device[params.method](params)
+    try {
+      var device = this.factory.load(id)  
 
-      return device
-    } else {
-      return {
-        errorMessage: "Device doesn't exist"
+      // If device model exists
+      if (device) {
+        // invoke desired method
+        device[method](params)
+
+        return device
       }
+    } catch(e) {
+      logger.error("Service - ", e)
     }
-}
+    
+    return null
+  }
+})
 

@@ -1,0 +1,8 @@
+var ACLEvaluator = Class({
+  $singleton: true,
+  
+  checkPermission: function(user, acl) {
+    // check if user in ACL
+    return true
+  }
+})

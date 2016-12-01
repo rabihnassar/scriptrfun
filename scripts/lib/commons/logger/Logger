@@ -39,7 +39,24 @@ function Logger(scope) {
       }
     })(i)
   }
-    
+  
+  this.startProfiling = function() {
+    this.startTime = (new Date()).getTime()
+  }
+
+  this.getLapse = function() {
+    var lapse = (new Date()).getTime()-this.startTime
+    this.debug(lapse + "ms passed since startProfiling was invoked")
+  }
+  
+  this.dir = function(obj) {
+    var s = "this is object"
+    for (var k in obj) {
+      s += msg(k+" ---> "+obj[k])
+    }
+    console.log(s)
+  }
+  
   scope.logger = {
     setLevel: this.setLogLevel,
 
@@ -47,7 +64,10 @@ function Logger(scope) {
     info: this.info,
     warn: this.warn,
     error: this.error,
-    log: this.debug
+    log: this.debug,
+    startProfiling: this.startProfiling,
+    getLapse: this.getLapse,
+    dir: this.dir
   }
   
   return scope.logger

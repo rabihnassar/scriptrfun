@@ -1,0 +1,145 @@
+/* 		Framr provides a framework to simplify writing larger scriptr.io application
+ *		This includes:
+ *			* An OOP library based on JSFace 
+ *			* A class loader offering a java like import() statement
+ *			* A better logger 
+ *			* Provides wrappers for frequently used libraries such as Underscore
+ *			* Instantiates frequently needed Classes/Libraries for scriptr application such as RepositoryAdaptor
+ *
+ *
+ * Objects installed in scope:
+ *		logger
+ *		Class
+ *		extend
+ */
+
+
+/* Initialize the Framework 
+ *	
+ *		@scope: scope where framework should be installed, typically 'this' of a script instance
+ *		@config: different variables needed to initialize
+ *		@config.classPath: string 	mandatory ';' separated classpath where framr should look for packages when 'import' is invoked
+ *		@config.quite: this makes the class loader logging less verbose
+ *		@config.repository: string 	optional RepositoryAdaptor Class to instantiate and install into scope
+ */
+function init(scope, config) {
+  var framr = new Framr(scope, config.classPath.split(";"), config.quite)
+
+  scope.logger.debug(config)
+  scope.logger.debug("Framr.js initialized")
+  return framr  
+}
+
+
+/*
+ *  Classloader that tries to require a certain script specificed by @className 
+ *	 in multiple locations specified by @classPath
+ *	By convention, the scripts loaded by this function, should 
+ *	 contain at least one defined function with the same name as the Script
+ *	The function will be installed in @scope
+ *
+ *	@className 	name of the scripts to require
+ *	@classPath 	array of possible locations to try to require the scripts
+ *	@scope		scope to install function
+ *	@reload optional	forces reload of an already loaded Class
+ *	@quite	optional 	classloader becomes less verbose
+ *
+ */
+function import(className, classPath, scope, base, reload, quite) {
+  // The class is loaded into the current scope, now you can do 'new Class()'
+  var loadedClass, loadedScript
+
+  var namePath = className.replace(/\./g, "/")
+  var namePathComponents = className.split(".")
+  var _className = namePathComponents[namePathComponents.length-1]
+  if (typeof base == "undefined") {
+    base = "/"
+  }
+
+  if (scope[_className] && !reload) {
+    if (scope.logger && !quite)  logger.debug("ClassLoader - class [" + className + "] already loaded, not reloading ")
+    return scope[_className]
+  }
+  if (scope.logger && !quite) logger.debug("ClassLoader - loading class: " + className)
+
+  for (var i=0; i<classPath.length; i++) {
+    try {
+      var p = base+classPath[i]+namePath
+      if (scope.logger && !quite) logger.debug("ClassLoader - attempting require('" + p + "')")
+      loadedScript = require(p)
+      loadedClass = loadedScript[_className]
+      if (scope.logger && !quite) logger.debug("ClassLoader - module [" + p + "] loaded")
+
+      break
+    } catch (e) {}
+  }
+
+  if (!loadedClass) {
+    if (scope.logger) logger.error("ClassLoader - Class [" + className + "] not found in classpath"); 
+    else console.logger("ClassLoader - Class [" + className + "] not found in classpath")  
+    return null
+  }
+
+  // Detect if the loaded class file has an init function and call it
+  if (loadedScript.init) { //(typeof loadedClass.init == "function") {
+    loadedScript.init(scope)
+    if (scope.logger) logger.info("ClassLoader - Script file ["+_className+"] init method invoked.")
+  }
+
+  scope[_className] = loadedClass // install Class into scope, instantiation example: object = new Class()
+  set(scope, className, loadedClass)  // install full Class name into scope, instantiation example: object = new this.package.Class()
+
+  if (scope.logger) logger.info("ClassLoader - Class ["+_className+"] installed in scope.")
+
+  // return new class in case you need a quick reference
+  return loadedClass
+}
+
+/* 		Framr provides a framework to simplify writing larger scriptr.io application
+ *		This includes:
+ *			* An OOP library based on JSFace 
+ *			* A class loader offering a java like import() statement
+ *			* A better logger 
+ *
+ *		@scope: 	a context to install loaded classes and implicit objects 
+ *		@classpath:	an array of possible filepath locations to search for Classes to be loaded
+ */
+function Framr(scope, classpath, quite){
+  (new (function(scope){
+    return function(){
+	  var base = "/"
+      scope.import = function(className, reload) {
+        return import(className, classpath, scope, base, reload, quite) 
+      }
+      // We need a logger by default
+      scope.import("commons.logger.Logger")
+      new scope.Logger(scope)
+
+      // We need to include JSFace to support JS OOP library to make it available to all modules using ClassLoader
+      var jsface = require("/modules/JSFace/jsface.js")
+      scope.Class  = jsface.Class
+      scope.extend = jsface.extend
+    }
+  })(scope))()
+}
+
+/*
+ * Creates an object in context with the children based on @path and sets its value to @object
+ *
+ */
+function set(context, path, object) {
+  var p = path.split(".")
+
+  var o = context
+
+  for (var i=0; i<p.length-1; i++) {
+    if (!o[p[i]]) o[p[i]] = {}
+
+    o = o[p[i]]
+  }
+  o[p[i]] = object
+}
+
+
+
+
