@@ -1,0 +1,8 @@
+<script>
+    <scriptACL>
+        <execute>{{ acl.execute }}</execute>
+        <read>{{ acl.read }}</read>
+        <write>{{ acl.write }}</write>
+    </scriptACL>
+    <code>
+        <![CDATA[{{ code }}]]

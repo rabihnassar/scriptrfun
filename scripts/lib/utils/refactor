@@ -1,0 +1,88 @@
+require("/lib/framr/Framr").init(this, {classPath: "lib/;lib/utils/", quite: false})
+
+import("scriptr.ScriptRepositoryAdaptor")
+import("framr.Underscore")
+import("framr.Mustache")
+
+function listLoadScript() {
+  var list = ScriptRepositoryAdaptor.list("/", true)
+
+  logger.log(list)
+  var script = JSON.parse(ScriptRepositoryAdaptor.get(list[5]))
+  logger.error(script.ACL)
+  logger.error(script.content)
+}
+
+// Load Mustache template from scriptr 
+//  TODO: this should be done by internal API, if not, a token should be used 
+function loadTemplate() {
+  var requestObject = {
+    "url": "http://demo.scriptrapps.io/lib/framr/templates/mashup",
+    "method": "GET" 
+  }
+  var response = http.request(requestObject)
+  return response.body
+}
+
+function generateScriptXML(code) {
+  
+}
+
+// SaveScript
+// 	
+function saveScript(path, code) {
+  var params = {
+    "apsdb.scriptName": path,
+    "apsdb.update": "false",
+    "apsdb.script": generateScriptXML(code)
+  }
+
+  var response = apsdb.callApi("SaveScript", params, null)
+  if (response.metadata.status == 'success') {
+    logger.info("Script " + path + " created")
+    return
+  } else {
+    if (response.metadata.statusCode == 400) {
+      // script exists, need to issue update
+      params["apsdb.update"] = "true";
+      response = apsdb.callApi("SaveScript", params, null)
+      if (response.metadata.status == 'success') {
+        logger.info("Script " + path + " updated")
+        return
+      }
+    } 
+  }
+  logger.error("Script " + path + " can't be created, with error message: " + JSON.stringify(response.metadata))
+}
+
+function parseTemplate(mashupName) {
+  // Get the Mustache template to generate the mashup code
+  var template = loadTemplate()
+
+  // load mashup data model & transform to adapt for Mustache
+  var model = {}
+  var mashup = (new DataProvider()).get(mashupName).mashup 
+  _.each(mashup.elements, function(el) {
+    if (!model[el.type]) model[el.type]=[]
+    if (el.type == "script") el.cls = getClassName(el.path)
+    model[el.type].push(el)
+  })
+
+  model.acl = mashup.acl
+
+  model.timestamp = Date()
+
+  var output = Mustache.render(template, model)
+
+  logger.debug(model)
+  logger.debug(output)
+  
+  return output
+}
+
+var code = parseTemplate(request.parameters.path)
+saveScript("mashup/generatedMashup", code)
+
+
+
+

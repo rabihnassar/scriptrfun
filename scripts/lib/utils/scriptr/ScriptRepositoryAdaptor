@@ -1,0 +1,50 @@
+import("framr.AbstractRepositoryAdaptor")
+
+var ScriptRepositoryAdaptor = Class(AbstractRepositoryAdaptor, {
+  $singleton: true,
+  
+  list: function(path, refresh) {
+      if ((storage.local.scripts != null) && !refresh) {
+        logger.debug("Returning cached scripts list")
+        return storage.local.scripts
+      }
+      
+      logger.debug("Fetching scripts list from server")
+
+      if (path.substring(0, 1)=="/") path = path.substring(1)
+        
+      // List server side scripts
+      var response = apsdb.callApi("ListScripts", null, null)
+
+      if (response.metadata.status == 'failure') {
+        return null
+      } else {
+        var scripts = []
+        var r = response.result.scripts
+        for (var i=0; i<r.length; i++) {
+          	if (r[i].name.substring(0, path.length) == path)
+				scripts.push(r[i].name.substring(path.length))
+        }
+        
+        storage.local.scripts = scripts
+        return scripts
+      }
+  },
+  
+  get: function(path) {
+      logger.debug("Fetching script from server")
+
+      if (path.substring(0, 1)=="/") path = path.substring(1)
+        
+      // List server side scripts
+      var response = apsdb.callApi("GetScript", {"apsdb.scriptName": path}, null)
+logger.log(response)
+      if (response.metadata.status == 'failure') {
+        return null
+      } else {
+        return response.result
+      }
+  }
+  
+  
+})
