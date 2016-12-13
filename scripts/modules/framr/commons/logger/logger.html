@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+	<title>logger</title>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+
+  	<script src="config.js"></script>
+    <style>
+      .timestamp {color: #999; margin-right: 15px;}
+      .txt0 {color: black}
+      .txt1 {color: #5274aa;}
+      .txt2 {color: #5274aa;}
+      .txt3 {color: red}
+      .txt4 {color: red}
+      
+      #log{
+        	width: 97%;
+        	word-wrap: break-word;
+        	font-family: monospace;
+        	font-size: 12px;
+        	font-weight: semibold;
+      }
+      
+      .level {width: 70px; display:inline-block;}
+      
+      .message {}
+      
+      .messageTxt {}
+       
+      
+      body {background: #fdfdfd;}
+  	</style>
+    <script>
+      var logLevel = ["DEBUG", "INFO", "WARN", "ERROR"]
+      
+      function printMessage(msg) {
+        $ ("#log").append(msg)
+        $(window).scrollTop($(document).height())
+      }
+      
+      function template(msg) {
+        return "<div class='message'><span class='timestamp'>"+msg.timestamp+"</span><div class='level'>"+logLevel[msg.level]+"</div><span class='messageTxt txt"+msg.level+"'>"+msg.txt+"</span></div>" 
+      }
+
+      
+      channelManager = new(function(){
+          // Open websocket to scriptr
+          var client = new WebSocket("wss://api.scriptr.io/" + SCRIPTR_TOKEN);
+
+          // Subscribe to events sent by scriptr to device
+          client.onopen = function (event) {
+              client.send(JSON.stringify({
+                  "method":"Subscribe",
+                  "params":{
+                      "channel": RECEIVE_CHANNEL
+                  }
+              }), client);
+          }
+
+          // Receive message and display
+          client.onmessage = function(event) {
+            var msg = JSON.parse(event.data)
+            if (typeof(msg.type) != "undefined") printMessage(template(msg)) 
+console.log(event.data)            
+          }
+      }) 
+     
+      $(function() {
+        $.urlParam = function(name){
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+console.dir(results)          
+            if (results==null){
+               return null;
+            }
+            else{
+               return results[1] || 0;
+            }
+        } 
+
+        function getParameters() {
+          	var paramStr = window.location.href.split("?")[1].split("&")
+            var params = {}
+            for (var i=0; i<paramStr.length; i++) {
+              var s = paramStr[i].split("=")
+              params[s[0]] = decodeURIComponent(s[1]) 
+            }
+          
+          	delete params.s
+            delete params.t
+          
+            return params
+        }
+        
+        console.dir(getParameters())
+        
+        var url = "https://"+$.urlParam("s")
+        var token = $.urlParam("t")
+        printMessage("Invoking: "+url+", with token: "+token)
+        if (url) {
+          $.ajax({
+              url: url,
+            	data: getParameters(),
+              headers: {
+                  'Authorization':'bearer '+token
+              },
+              method: 'POST',
+              dataType: 'json',
+              success: function(data){
+                console.log('succes: '+data);
+              }
+            });
+        }
+      })
+  	</script>
+</head>
+
+<body>
+  <h1>scriptr.io websockets based degbugger</h1>
+  <div id="log"></div>  
+</body>
+
+</html>

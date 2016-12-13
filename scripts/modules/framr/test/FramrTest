@@ -1,0 +1,38 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/"})
+
+logger.setLevel("DEBUG")
+
+// Test class definition 
+var Person = Class({
+  constructor: function(name, age) {
+    this.name = name;
+    this.age  = age;
+  },
+
+  // Getter/Setter
+  address: {
+    get: function() {
+      return this._address;
+    },
+    set: function(value) {
+      this._address = value;
+    }
+  },
+
+  toString: function() {
+    return this.name + "/" + this.age + "/" + this.address;
+  }
+});
+
+
+// Test object instantiation
+var person = new Person("Tom", 50);
+person.address = "119 west 24"
+logger.info(person.toString())
+
+// Test Class init
+import("framr.commons.Underscore")
+_.each([1, 2, 3], logger.log);
+
+logger.log((person instanceof Person)?"works!":"")
+

@@ -1,0 +1,150 @@
+import("framr.AbstractRepositoryAdaptor")
+import("devices.Device")
+import("devices.Location")
+
+var DeviceRepositoryAdaptor = Class(AbstractRepositoryAdaptor, {
+  constructor: function(config) {
+    DeviceRepositoryAdaptor.$super.call(this, config)
+    logger.debug("instantiating Agnes adaptor")
+  },
+  
+  _saveDevice: function(device, update) {
+    if (!(device instanceof Device)) {
+      	var _errText = "DeviceRepositoryAdaptor._saveDevice - parameter device should be an instance of devices.Device"
+        logger.error(_errText)
+	    throw(_errText)
+    }
+    var obj = {}
+    // copy model to new object
+    var model = device.serialize()	
+
+    // copy model to new object and derive schema
+    for (var k in model) {
+      // Derive schema from Javascript types
+      if (typeof model[k] == "string") {
+        obj[k]=model[k]
+        if (model[k].length>250) schema[k+".apsdb.fieldType"] = "text"
+      } else if (typeof model[k] == "number") {
+        obj[k]=model[k]
+        obj[k+".apsdb.fieldType"] = "numeric" 
+      } else if (typeof model[k] == "boolean") {
+        obj[k]=model[k]
+        obj[k+".apsdb.fieldType"] = "string" 
+      } else if (typeof model[k] == "object") {
+        if (model[k] instanceof Location) {
+          obj[k+".apsdb.fieldType"] = "geospatial" 
+          obj[k] = model[k].toString()
+        } else if (model[k] instanceof Date) {
+          obj[k+".apsdb.fieldType"] = "date" 
+          // yyyy-MM-dd'T'HH:mm:ssZ (e.g. 2012-04-13T13:01:02+0000)
+          var d = model[k].getFullYear()+"-"+(model[k].getMonth()+1)+"-"+model[k].getDate()+"T"
+          			+model[k].getHours()+":"+model[k].getMinutes()+":"+model[k].getSeconds()+"+0000"
+		  obj[k] = d
+        }
+      }
+    }
+    // Install password, this is a problem with the current Agnes API
+    obj.password = "!@#$%^&*()"
+    obj["apsdb.update"]= update
+
+    var response = apsdb.callApi("SaveDevice", obj, null)
+    this._logText("SaveDevice", obj, response)
+    
+    return response
+  },
+  
+  _logText: function(api, request, response) {
+    logger.debug("calling ["+api+"], with arguments:")
+    logger.debug(request)
+    logger.debug("["+api+"] response:")
+    logger.debug(response)
+  },
+  
+  _jsDate: function(dateStr) {
+    // conver from a string like this to 2016-11-4T12:55:46+0000
+    // to   
+    // Date(year, month, day, hours, minutes, seconds, milliseconds)
+    var dateStr = dateStr.split("T")
+    var d = dateStr[0].split("-")
+    var t = dateStr[1].split(":")
+    return new Date(d[0], d[1], d[2], t[0], t[1], t[2].split("+")[0])
+    
+  },
+
+  create: function(device) {
+    var response = this._saveDevice(device, false)
+
+    if (response.metadata.status=="failure") throw (response.metadata);
+    else return true
+  },
+
+  update: function(device) {
+    var response = this._saveDevice(device, true)
+    
+    if (response.metadata.status=="failure") throw (response.metadata);
+    else return true
+  },
+  
+  save: function(device) {
+    try {
+      this.update(device)
+    } catch(e) {
+      if (e.errorCode == "INVALID_DEVICE") this.create(device); // DUPLICATE_DEVICE
+      else throw(e)
+    }
+  },
+
+  load: function(id) {
+    var request = {
+      id: id,
+     "apsdb.includeFieldType": "true"
+    }
+    var response = apsdb.callApi("GetDevice", request, null)
+    this._logText("GetDevice", request, response)
+
+    if (response.metadata.status=="failure") throw (response.metadata);
+    else {
+      var fieldTypes = response.result.device._type
+      var model = response.result.device
+      delete model._type
+
+      var device = {}
+	  // perform type casting based on agnes response 
+      for (var k in fieldTypes) {
+        if (fieldTypes[k] == "geospatial") device[k] = new Location(model[k]);
+        else if (fieldTypes[k] == "numeric") device[k] = Number(model[k]);
+        else if (fieldTypes[k] == "date") device[k] = this._jsDate(model[k]);
+        else if (model[k] == "true") device[k] = true;
+        else if (model[k] == "false") device[k] = false;
+        else device[k]=model[k]
+      }  
+      return device
+    }
+  },
+  
+  delete: function(device) {
+    var id
+    if (typeof device == "object") id = device.get("id"); else id=device
+    
+    var response = apsdb.callApi("DeleteDevice", {
+      id: id
+    }, null)
+
+    this._logText("DeleteDevice", {id: id}, response)
+
+    if (response.metadata.status=="failure") throw (response.metadata);
+    else return true
+  },
+
+  query: function(options) {
+    var obj = {}
+    // copy model to new object
+    for (var k in options) {obj["apsdb."+k]=options[k]}
+    var response = apsdb.callApi("ListDevices", obj, null)
+
+    this._logText("ListDevices", obj, response)
+
+    if (response.metadata.status=="failure") throw (response.metadata);
+    else return response.result.devices
+  }
+})

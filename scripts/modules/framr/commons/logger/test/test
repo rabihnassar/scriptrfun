@@ -1,0 +1,21 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/"})
+
+function debug() {
+  console.log("------------------")
+  logger.debug("DEBUG")
+  logger.info("INFO")
+  logger.warn("WARN")
+  logger.error("ERROR")
+}
+
+logger.setLevel("DEBUG")
+debug()
+
+logger.setLevel("INFO")
+debug()
+
+logger.setLevel("WARN")
+debug()
+
+logger.setLevel("ERROR")
+debug()

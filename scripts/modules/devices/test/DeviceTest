@@ -1,0 +1,20 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/"})
+
+import("devices.Device")
+
+var model = {
+  location: new Location("48.8580,2.2951"),
+  id: "testDevice",
+  name: "Test Device"
+}
+
+var d = new Device({model: model})
+
+d.set("temperature", 40)
+
+d.save()
+d.delete()
+
+logger.log(d.serialize())
+
+logger.log((d.serialize().temperature == 40)?"works":"")
