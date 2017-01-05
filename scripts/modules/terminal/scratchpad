@@ -1,0 +1,143 @@
+terminal.js -----
+scriptr = {}
+scriptr.Command = Class({
+  constuctor: function() {
+  },
+
+  parseForParam: function(command, paramName, expectJson) {
+    var t = command.trim().split(paramName+" ")
+    var params
+    if (t.length==2) {
+      try{
+        params = t[1].trim()
+        if (expectJson) params = JSON.parse(params.split("}")[0] + "}"); else params = params.split(" ")[0].trim()
+        return params
+      } catch (e) {
+        throw new Error (300, (expectJson)?(paramName+" parameter JSON argument not valid"):(paramName+" argument not valid"), command.indexOf(paramName))
+      }
+    }
+  },
+
+  syntaxHighlight: function(json) {
+    if (typeof json != "string") json = JSON.stringify(json)
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+      var cls = 'number';
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          cls = 'key';
+        } else {
+          cls = 'string';
+        }
+      } else if (/true|false/.test(match)) {
+        cls = 'boolean';
+      } else if (/null/.test(match)) {
+        cls = 'null';
+      }
+      return '<span class="' + cls + '">' + match + '</span>';
+    });
+  }
+  
+  
+})
+
+
+commands/ws.js -------
+scriptr.Ws = Class(scriptr.Command, {
+  constructor: function() {
+    scriptr.Ws.$super.call()
+
+    var self = this
+    var command = {
+      command: "ws",
+      handler: self.handler
+    }
+  },
+  
+  send: function(params, uid) {
+    var t = params.split(" ")
+
+    var message = {
+      "method":t[0], //the "translate" method is a user script that translates messages from English to French.
+      "id": uid, //will be returned as part of the generated id, in order to identify the response
+    }
+    var p = parseForParam(params, "-p", true)
+    if (p) message.params = p
+
+    window.websocketClient.send(JSON.stringify(message));        
+  },
+  
+  handler: function(params, term){
+      var uid = getUid()
+
+      var timestamp = (new Date()).getTime()
+      var showResponse = (params.indexOf("-noresponse")<0)
+      showLogs = (params.indexOf("-nolog")<0)
+
+      if (!window.websocketClient) {
+        term.pause()
+        window.websocketClient = new WebSocket("wss://api.scriptr.io/" + SCRIPTR_TOKEN);
+      } else {
+        term.pause()
+        send(params, uid)
+      }
+
+      window.websocketClient.onopen = function (event) {
+        send(params, uid)
+      }
+
+      window.websocketClient.onclose = function (event) {
+        term.resume()
+      }
+
+      window.websocketClient.onerror = function (event) {
+        term.resume()
+      }
+      
+      // Receive message and display
+      window.websocketClient.onmessage = function(event) {
+        var data = JSON.parse(event.data)
+        var id = data.id.split('-') 
+
+        if ((id.length>1) && (id[1]==uid)) {
+          var hiddenLog = false
+          if (showLogs) {
+            try {
+              if (data.scriptLog) {
+                term.echo(" ")
+                term.echo("Log (extracted from response.scriptLog):")
+                data.scriptLog.forEach(function(l) {
+                  term.echo(template2(l), {raw:true})
+                })
+              }
+              delete data.scriptLog
+              hiddenLog = true
+            } catch(e) {}
+          }
+          if (showResponse) {
+            term.echo(" ")
+            term.echo("Script response" + (hiddenLog?" (hiding response.scriptLog):":":"))
+            term.echo(JSON.stringify(data,null,4))
+          }
+          term.echo(" ")
+          term.echo("Request execution time: "+((new Date()).getTime()-timestamp)+"ms",{raw:true})
+          term.echo(" ")
+
+          term.resume()
+        }
+      }
+
+      // Reopen connection
+
+    },
+    help: 'Invoke a script using websockets.'
+  }
+  
+})
+
+
+tty ----------
+	<script src="https://cdn.jsdelivr.net/jsface/2.4.9/jsface.min.js"></script>
+
+
+

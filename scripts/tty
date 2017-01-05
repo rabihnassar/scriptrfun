@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0; url=https://rabih.scriptrapps.io/modules/terminal/tty" />
+    <style>
+      body {
+        background:#222;
+      }
+      #logo {
+        color: white;
+        font-familty: "Courier New", Courier, monospace;
+        font-size: 50px;
+        position: absolute;
+        margin: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -29px;
+        margin-left: -121px;
+      }
+      #caret {
+        line-height: 0.5em;
+        font-size: 0.7em;
+        background-color: white;
+        animation-duration: 400ms;
+        animation-name: blink;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+      }
+
+      @keyframes blink {
+        from {
+          background-color: white;
+        }
+        to {
+          background-color: #222;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="logo">&nbsp;scriptr.io&gt;<span style="padding-left:5px;"></span><span id="caret">&nbsp;&nbsp;&nbsp;</span></div>
+  </body>
+</html>

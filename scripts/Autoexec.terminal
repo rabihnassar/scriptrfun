@@ -1,0 +1,4 @@
+echo mapping frequent commands for easier invocation
+echo e.g.: mapCommand devices/execute id method -description This sends a message to a device
+echo  
+mapCommand devices/execute id method -description This sends a message to a device
