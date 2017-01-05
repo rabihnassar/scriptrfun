@@ -1,0 +1,17 @@
+require("/lib/framr/Framr").init(this, {classPath: "./lib/;./devices/", quite: true})
+
+logger.setLevel("DEBUG")
+
+import("backend.Models")
+
+var m = new Models()
+
+logger.startProfiling()
+var l = m.list(true)
+logger.getLapse()
+
+logger.startProfiling()
+var l = m.list(false)
+logger.getLapse()
+
+return l

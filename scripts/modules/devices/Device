@@ -32,11 +32,24 @@ var Device = Class({
     this.save()
   },
   
+  online: function() {
+    this.metadata.online = true
+    this.save()
+  },
+  
+  offline: function() {
+    this.metadata.online = false
+    this.save()
+  },
+
   set: function(key, value) { // key could be a map
     if (typeof key == "string") {
-	    this.metadata[key] = value
+      	if (key!="enabled" && key!="online") this.metadata[key] = value; else logger.warn("Device - device metadata attribute ["+key+"] is reserved.")
     } else if (typeof key == "object") {
-        for (var k in key) this.metadata[k]=key[k]
+      // key is not a key, but a map
+        for (var k in key) {
+          if (k!="enabled" && k!="online") this.metadata[k]=key[k]; else logger.warn("Device - device metadata attribute ["+key+"] is reserved.")
+        }
     }
   },
     

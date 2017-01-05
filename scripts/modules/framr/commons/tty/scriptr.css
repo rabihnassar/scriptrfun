@@ -1,0 +1,71 @@
+.scriptr { 
+    font-family: "Courier New", Courier, monospace; 
+    background-color: #fff;
+    line-height: 1.2em;
+    font-size: 0.8em; 
+    /* Hack to hide the real caret */
+    color: transparent; text-shadow: 0 0 0 #222;
+}
+.scriptr .content { padding: 15px 15px 0 15px; }
+.scriptr .prompt { padding: 0 15px 15px 15px; }
+.scriptr .content ul { margin: 0; }
+.scriptr .content ul li { list-style-type: none; }
+.scriptr .loading span::after {
+    content: "⚙";
+    color: red; font-size: 10em;
+    border-radius: 10em; opacity: 0.4;
+}
+
+
+.timestamp {color: #999; margin-right: 15px;}
+.txt0 {color: black}
+.txt1 {color: #5274aa;}
+.txt2 {color: #5274aa;}
+.txt3 {color: red}
+.txt4 {color: red}
+
+#log{
+  width: 97%;
+  word-wrap: break-word;
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: semibold;
+}
+
+.level {width: 70px; display:inline-block;}
+
+.message {}
+
+.messageTxt {
+  color: #ddd;
+  text-shadow:none !important;
+}
+
+body {background: #fdfdfd;}
+
+xpre {
+  outline: 1px solid #ccc;
+  padding: 5px;
+  margin: 5px;
+}
+
+.string {
+  color: green;
+}
+
+.number {
+  color: darkorange;
+}
+
+.boolean {
+  color: blue;
+}
+
+.null {
+  color: magenta;
+}
+
+.key {
+  color: red;
+}
+

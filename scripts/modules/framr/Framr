@@ -72,11 +72,8 @@ function import(className, classPath, scope, base, reload, quite) {
     try {
       var p = base+classPath[i]+namePath
       if (scope.logger && !quite) logger.debug("ClassLoader - attempting require('" + p + "')")
-console.log("===========================")
-console.log(p)
       
       loadedScript = require(p)
-console.log(loadedScript)
 
       loadedClass = loadedScript[_className]
       if (scope.logger && !quite) logger.debug("ClassLoader - module [" + p + "] loaded")

@@ -3,53 +3,55 @@
 <head>
 	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <meta charset="UTF-8">
-    <title>Example - example-guide-concepts-1-production</title>
+    <title>Device model editor</title>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
   
 <script>
 angular.module('editor', [])
-.factory('backend', ['$http', function($http) {
-  	this.models = ["one", "two", "three"]
+.controller('devices', function Model($http, $scope) {
+  console.log('hi')
+  $scope.models = []
+ 
+  $http({
+    method: 'GET',
+    url: 'https://rabih.scriptrapps.io/devices/backend/listScripts'
+  }).then(function successCallback(response) {
+    $scope.models = response.data.response.result 
+  }, function errorCallback(response) {
+    // called asynchronously if an error occurs
+    // or server returns response with an error status.
+  });
 
-    var refresh = function() {
-      $http({
-        method: 'GET',
-        url: 'https://rabih.scriptrapps.io/devices/backend/listScripts'
-      }).then(function successCallback(response) {
-        this.models = response.data.response.result 
-console.log(response.data.response.result)
-      }, function errorCallback(response) {
-        // called asynchronously if an error occurs
-        // or server returns response with an error status.
-      });
+  	$scope.save() = function() {
+      
     }
-
-  refresh()
-    
-  return this.models;
-}])
   
-  angular.module('editor', []).controller('Model', ['backend' ,function Model(backend) {
-//  this.models = ["one", "two", "three"]
-  this.models = backend.models
-}])
+  $scope.$watch('models', function(newVal, oldVal) {
+  console.log('loaded')
+  	console.log(newVal)
+  })
+}).controller('form', function Form($scope) {
+  
+})
 </script>
 
 </head>
 <body >
+  <hr>
 
-<div ng-app="editor" ng-controller="Model as model">
-  <span ng-repeat="s in model.models">
-    {{ s }}
-  </span>
-</div>
+    <div ng-app="editor" ng-controller="devices">
+    <form>
+        <h3>form</h3>
+          Checkbox: <input type="checkbox" ng-model="checkbox" /> </br>
+        Input: <input ng-model="input" />
+          <input type="button" ng-click="save()" /> </br>
+    </form>
+  <div>  {{ checkbox }} {{ input }} </div> 
+  	<div ng-repeat="model in models">
+  		{{model}}
+	</div>
+  </div>
 
   
-</body>
+  </body>
 </html>
-
-<!-- 
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
--->

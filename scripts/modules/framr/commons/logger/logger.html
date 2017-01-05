@@ -31,10 +31,36 @@
       .message {}
       
       .messageTxt {}
-       
       
       body {background: #fdfdfd;}
-  	</style>
+
+      xpre {
+        outline: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+      }
+
+      .string {
+        color: green;
+      }
+
+      .number {
+        color: darkorange;
+      }
+
+      .boolean {
+        color: blue;
+      }
+
+      .null {
+        color: magenta;
+      }
+
+      .key {
+        color: red;
+      }
+
+    </style>
     <script>
       var logLevel = ["DEBUG", "INFO", "WARN", "ERROR"]
       
@@ -44,10 +70,29 @@
       }
       
       function template(msg) {
-        return "<div class='message'><span class='timestamp'>"+msg.timestamp+"</span><div class='level'>"+logLevel[msg.level]+"</div><span class='messageTxt txt"+msg.level+"'>"+msg.txt+"</span></div>" 
+        return "<div class='message'><span class='timestamp'>"+msg.timestamp+"</span><div class='level'>"+logLevel[msg.level]+
+          "</div><span class='messageTxt txt"+msg.level+"'>"+syntaxHighlight(msg.txt)+"</span></div>" 
+      }
+      
+      function syntaxHighlight(json) {
+        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+          var cls = 'number';
+          if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+              cls = 'key';
+            } else {
+              cls = 'string';
+            }
+          } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+          } else if (/null/.test(match)) {
+            cls = 'null';
+          }
+          return '<span class="' + cls + '">' + match + '</span>';
+        });
       }
 
-      
       channelManager = new(function(){
           // Open websocket to scriptr
           var client = new WebSocket("wss://api.scriptr.io/" + SCRIPTR_TOKEN);
@@ -66,14 +111,17 @@
           client.onmessage = function(event) {
             var msg = JSON.parse(event.data)
             if (typeof(msg.type) != "undefined") printMessage(template(msg)) 
-console.log(event.data)            
+          }
+          
+          client.onclose = function(event) {
+            var msg = JSON.parse(event.data)
+            if (typeof(msg.type) != "undefined") printMessage(template(msg)) 
           }
       }) 
      
       $(function() {
         $.urlParam = function(name){
             var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-console.dir(results)          
             if (results==null){
                return null;
             }
@@ -83,25 +131,26 @@ console.dir(results)
         } 
 
         function getParameters() {
-          	var paramStr = window.location.href.split("?")[1].split("&")
-            var params = {}
-            for (var i=0; i<paramStr.length; i++) {
+          var params = {}
+          var paramStr = window.location.href.split("?")[1]
+          if (paramStr) {
+            var paramArray = paramStr.split("&")
+            for (var i=0; i<paramArray.length; i++) {
               var s = paramStr[i].split("=")
               params[s[0]] = decodeURIComponent(s[1]) 
             }
-          
-          	delete params.s
+
+            delete params.s
             delete params.t
-          
-            return params
+          }
+
+          return params
         }
-        
-        console.dir(getParameters())
-        
-        var url = "https://"+$.urlParam("s")
-        var token = $.urlParam("t")
-        printMessage("Invoking: "+url+", with token: "+token)
-        if (url) {
+
+        if ($.urlParam("s")) {
+          var url = window.location.origin+$.urlParam("s")
+          var token = $.urlParam("t")
+	      printMessage("Invoking: "+url+", with token: "+token+"<br />")
           $.ajax({
               url: url,
             	data: getParameters(),
@@ -116,12 +165,39 @@ console.dir(results)
             });
         }
       })
+      
+      function call(url, script, params, token) {
+        if (!token) token = SCRIPTR_TOKEN
+
+        var url = "https://"+url+"/"+script
+        printMessage("Invoking: "+url+", with token: "+token+"<br />")
+
+        var p = {
+          url: url,
+          data: params,
+          headers: {
+            'Authorization':'bearer '+token
+          },
+          method: 'POST',
+          dataType: 'json',
+          success: function(data){
+            console.log('succes')
+            console.log(JSON.stringify(data,{},4))
+          }
+        }
+
+        $.ajax(p)
+        return "POST to url:"+url
+      }
+      
+      var h = function(){console.log('hi')}
+      var help = "call(<URL>, <SCRIPT>, <PARAMS>, <TOKEN>)\n"
   	</script>
 </head>
 
 <body>
   <h1>scriptr.io websockets based degbugger</h1>
-  <div id="log"></div>  
+  <pre id="log"></pre>  
 </body>
 
 </html>
