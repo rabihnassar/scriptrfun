@@ -1,0 +1,93 @@
+
+.terminal, .cmd {
+    font-family: monospace;
+    /*font-family: FreeMono, monospace; this don't work on Android */
+  
+  
+
+    color: orange;
+    background-color: #222;
+
+  color: #111;
+    background-color: #FFF;
+
+  font-size: 14px;
+    line-height: 14px;
+}
+.terminal-output > div {
+    /*padding-top: 3px;*/
+    min-height: 14px;
+}
+
+.terminal .terminal-output div div, .cmd .prompt {
+    display: block;
+    line-height: 14px;
+    height: auto;
+}
+
+#welcomeText {
+   line-height: 12px;
+  
+   animation-duration: 1000ms;
+   animation-name: blink;
+   animation-iteration-count: 1;
+   animation-direction: alternate;
+}
+
+@keyframes blink {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.helpCmd {
+  	color: green;
+  	font-weight: bold;
+}
+
+
+
+/* log output */
+      .timestamp {color: #999; margin-right: 15px;}
+      .txt0 {color: black}
+      .txt1 {color: #5274aa;}
+      .txt2 {color: #5274aa;}
+      .txt3 {color: red}
+      .txt4 {color: red}
+      
+      #log{
+        	width: 97%;
+        	word-wrap: break-word;
+        	font-family: monospace;
+        	font-size: 12px;
+        	font-weight: semibold;
+      }
+      
+      .level {width: 70px; display:inline-block;}
+
+
+
+/* syntax highlight */
+
+.string {
+  color: green;
+}
+
+.number {
+  color: darkorange;
+}
+
+.boolean {
+  color: blue;
+}
+
+.null {
+  color: magenta;
+}
+
+.key {
+  color: red;
+}
