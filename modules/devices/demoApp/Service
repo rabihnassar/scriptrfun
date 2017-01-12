@@ -1,0 +1,26 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/;./modules/devices/demoApp/", quiet: true})
+
+import("devices.Service")
+import("agnes.DeviceRepositoryAdaptor")
+import("agnes.HybridRepositoryAdaptor")
+
+logger.debug(JSON.stringify(request.parameters))
+
+if (!request.parameters.id) logger.error("id missing in request parameters.")
+if (!request.parameters.method) logger.warn("method missing in request parameters.")
+
+// Remove unnecessary id & method from request object to pass to service
+var params = {}
+for (var k in request.parameters) params[k] = request.parameters[k]
+delete params.id
+delete params.method
+
+// Instantiate Service with a repository adaptor
+var service = new Service(new agnes.HybridRepositoryAdaptor())
+//var device = Service("anotherCar", "update", {oilTemperature: "90", weight: "2T"})
+//var device = service.execute("porsche", "start")
+//var device = service.execute("porsche", "setSpeed", {speed: 70})
+
+var device = service.execute(request.parameters.id, request.parameters.method, params)
+
+return device?device.serialize():null

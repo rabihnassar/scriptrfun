@@ -1,0 +1,27 @@
+import("devices.Device")
+//import("framr.ACLEvaluator")
+
+var Vehicle = Class(Device, {
+  constructor: function(model) {
+    Vehicle.$super.call(this, model)
+    this.set("cls", "model.Vehicle") 
+  },
+
+  start: function() {
+	//ACLEvaluator.checkPermission({}, "group:deviceOwners")
+    this.set("running", true)
+    this.save()
+  },
+
+  stop: function() {
+	//ACLEvaluator.checkPermission({}, "group:deviceOwners")
+    this.set("running", false)
+    this.save()
+  },
+  
+  setSpeed: function(params) {
+	//ACLEvaluator.checkPermission({}, "group:deviceOwners")
+    this.set("speed", params.speed)
+    this.save()
+  }
+})

@@ -1,0 +1,19 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/", quiet: true})
+
+import("devices.Device")
+import("devices.DeviceFactory")
+import("model.Car")
+import("agnes.DeviceRepositoryAdaptor")
+
+var model = {
+  id: "porsche",
+  name: "My new porsche @"+Date(),
+  location: new Location("48.8580,2.2951"),
+  someDate: new Date()
+}
+
+var d = new Car({model: model, adaptor: new agnes.DeviceRepositoryAdaptor()})
+d.save()
+d.start()
+
+return d.serialize()

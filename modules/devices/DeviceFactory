@@ -1,0 +1,31 @@
+var DeviceFactory = Class({
+  
+  	constructor: function(options) {
+      this.adaptor = options.adaptor
+    },
+      
+    load: function(id) {
+      var model
+      
+      try {
+		model = this.adaptor.load(id)
+      } catch(err) {
+        return null
+      }
+
+      // Load device class dynamically
+      var deviceClass = import(model.cls)
+
+      // Instantiate a new device of deviceClass
+      var device = new deviceClass({adaptor: this.adaptor, model: model})
+
+      return device
+    },
+  
+  	new: function(cls, options) {
+      if (!options) options = {}
+      if (!options.adaptor) options.adaptor = this.adaptor
+      var device = new cls(options)
+      return device
+    }
+})

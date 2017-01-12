@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Example - example-guide-concepts-3-production</title>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+  <script src="invoice3.js"></script>
+  <script src="finance3.js"></script>
+</head>
+<body >
+  <div ng-app="invoice3" ng-controller="InvoiceController as invoice">
+    <b>Total:</b>
+    <span ng-repeat="c in invoice.currencies">
+      {{invoice.total(c) | currency:c}}
+    </span>
+    
+    <span ng-repeat="m in invoice.models">
+      {{ m }}
+    </span>
+    
+  </div>
+</div>
+</body>
+</html>
+
+<!-- 
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+-->

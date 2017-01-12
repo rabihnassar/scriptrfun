@@ -28,7 +28,7 @@ jQuery(document).ready(function($) {
 
       if (!window.websocketClient) {
         term.pause()
-        window.websocketClient = new WebSocket("wss://api.scriptr.io/" + SCRIPTR_TOKEN);
+        window.websocketClient = new WebSocket("wss://"+window.scriptr.terminal.url+"/" + window.scriptr.terminal.token);
       } else {
         term.pause()
         send(params, uid)
@@ -69,7 +69,7 @@ jQuery(document).ready(function($) {
           if (showResponse) {
             term.echo(" ")
             term.echo("Script response" + (hiddenLog?" (hiding response.scriptLog):":":"))
-            term.echo(JSON.stringify(data,null,4))
+            term.echo("<pre>"+syntaxHighlight(JSON.stringify(data,null,4))+"</pre>",{raw:true})
           }
           term.echo(" ")
           term.echo("Request execution time: "+((new Date()).getTime()-timestamp)+"ms",{raw:true})
@@ -84,5 +84,5 @@ jQuery(document).ready(function($) {
     },
     help: {id:"help-ws"}
   }
-  window.scriptrCommands.add(ws)
+  window.scriptr.terminal.Interpreter.add(ws)
 })

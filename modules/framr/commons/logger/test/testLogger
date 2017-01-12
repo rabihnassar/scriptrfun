@@ -1,0 +1,38 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/"})
+
+logger.log("testing level filtering.")
+
+function debug() {
+  console.log("------------------")
+  logger.debug("DEBUG")
+  logger.info("INFO")
+  logger.warn("WARN")
+  logger.error("ERROR")
+}
+
+logger.setLevel("DEBUG")
+debug()
+
+logger.setLevel("INFO")
+debug()
+
+logger.setLevel("WARN")
+debug()
+
+logger.setLevel("ERROR")
+debug()
+
+logger.setLevel("DEBUG")
+var obj = {
+  a: 1,
+  'b': 'foo',
+  c: [false, 'false', null, 'null', {
+    d: {
+      e: 1.3e5,
+      f: '1.3e5'
+    }
+  }]
+}
+
+logger.log(obj)
+logger.log(request)

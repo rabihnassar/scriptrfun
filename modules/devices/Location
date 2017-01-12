@@ -1,0 +1,16 @@
+var Location = Class({
+    constructor: function(coord) {
+      if (coord) {
+        var l = coord.split(",") 
+        this.lat = l[0]
+        this.long = l[1]
+      } else {
+        this.lat = 0
+        this.long = 0
+      }
+    },
+
+    toString: function() {
+      return this.lat+","+this.long
+    }
+})

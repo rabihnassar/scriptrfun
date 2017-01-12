@@ -1,0 +1,35 @@
+import("devices.DeviceFactory")
+
+/*	fetches a device model from the device repository and executes a method on it based on its class
+ *		@params		map that should contain at least id and method 
+ *
+ */
+
+var Service = Class({
+  constructor: function(adaptor) {
+    this.adaptor = adaptor
+    this.factory = new devices.DeviceFactory({adaptor: adaptor})
+  },
+  
+  execute: function(id, method, params) {
+	// fetch deviceModel by DeviceID from device Database, load will pick ID from request.
+  	// This is important to retrieve the device classname and instantiate the proper device class for the model 
+    
+    try {
+      var device = this.factory.load(id)  
+
+      // If device model exists
+      if (device) {
+        // invoke desired method
+        device[method](params)
+
+        return device
+      }
+    } catch(e) {
+      logger.error("Service - ", e)
+    }
+    
+    return null
+  }
+})
+

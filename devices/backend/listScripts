@@ -1,0 +1,13 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/;./devices/", quite: true})
+
+logger.setLevel("DEBUG")
+
+import("backend.Models")
+
+var m = new Models()
+
+logger.startProfiling()
+var l = m.list(request.parameters.refresh && (request.parameters.refresh=="true"))
+logger.getLapse()
+
+return l

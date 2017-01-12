@@ -1,19 +1,28 @@
+body {
+  border: 0;
+  padding: 0;
+  margin: 0;}
+#terminal {
+  height:100vh;
+  padding: 0 10px;
+}
 
 .terminal, .cmd {
-    font-family: monospace;
-    /*font-family: FreeMono, monospace; this don't work on Android */
-  
-  
-
-    color: orange;
-    background-color: #222;
-
-  color: #111;
-    background-color: #FFF;
-
-  font-size: 14px;
-    line-height: 14px;
+   font-family: monospace;
+   font-family: "Menlo Regular","Lucida Console",Monaco,monospace,"Courier New",Fixed;
+   /*font-family: FreeMono, monospace; this don't work on Android */
+   color: orange;
+   background-color: #222;
+   font-size: 14px;
+   line-height: 14px;
+   padding:0px;
 }
+
+.white {
+   color: #111;
+   background-color: #FFF;
+}
+
 .terminal-output > div {
     /*padding-top: 3px;*/
     min-height: 14px;

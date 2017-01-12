@@ -1,0 +1,52 @@
+import("devices.Device")
+//import("framr.ACLEvaluator")
+
+var Lock = Class(Device, {
+  constructor: function(model) {
+    
+    this.acl = [
+      {"lock":"group:users"},
+      {"unlock":"group:admins"}
+    ]
+    
+    Lock.$super.call(this, model)
+    this.set("cls", "model.Lock") 
+  },
+  
+  //
+  // Methods
+  //
+  lock: function() {
+    messaging.publish({id: this.id, action:"lock"})
+  },
+  
+  unlock: function() {
+    messaging.publish({id: this.id, action:"unlock"})
+  },
+  
+  //
+  // Events
+  //
+  onEvent: function(event) {
+    if (event=='lock') {
+      
+    }
+  },
+  
+  
+  onLock: function() {
+    this.set("locked", true)
+    this.save()
+  },
+  
+  onUnlock: function() {
+    this.set("locked", false)
+    this.save()
+  },
+  
+  onTamper: function() {
+    this.set("tamperedWith", true)
+    someAlarmSystem.raise(this.id)
+    this.save()
+  }
+})

@@ -1,0 +1,89 @@
+// store stuff to remember here
+
+
+//      	      if (!ACLEvaluator.hasAccess(request.user, this.startVehicleACL)) return null
+
+/*
+ * Creates an object in context with the children based on @path and sets its value to @object
+ *
+ */
+function set(context, path, object) {
+  var p = path.split(".")
+  
+  var o = context
+  
+  for (var i=0; i<p.length-1; i++) {
+    if (!o[p[i]]) o[p[i]] = {}
+
+    o = o[p[i]]
+  }
+  o[p[i]] = object
+}
+
+//
+//
+//
+//
+  serialize: function() {
+    var model = {}
+    for (var k in this) {
+      if (this[k] instanceof Location) model[k] = this[k].toString();
+      else if ((!(this[k] instanceof Function)) && (!(this[k] instanceof Object))) {
+	      model[k] = this[k]
+      }
+    }
+	return model
+  },
+
+//
+import("devices.DeviceRepositoryAdaptor")
+import("devices.Location")
+
+var Device = Class({
+  constructor: function(options) {
+    if (options.repositoryAdaptorClass) this.adaptor = new options.repositoryAdaptorClass()
+
+    // Device attributes 
+    this.id = model.id || ""
+    this.name = model.name || ""
+    this.location = model.location || (new Location(0.0,0.0))
+
+    // Default values
+    this.cls = "devices.Device"
+    this.enabled = true
+
+    // schema
+    if (this.adaptor) this.adaptor.setFieldType("location", "geospatial")
+  },
+  
+  enable: function() {
+    this.enabled=true
+    this.save()
+  },
+  
+  disable: function() {
+    this.enabled=false
+    this.save()
+  },
+  
+  update: function(attrs) {
+    for (var k in attrs) this[k] = attrs[k]
+    this.save()
+  },
+  
+  getAttributes: function() {
+    var model = {}
+    for (var k in this) {
+      if (this[k] instanceof Location) model[k] = this[k];
+      else if ((!(this[k] instanceof Function)) && (!(this[k] instanceof Object))) {
+	      model[k] = this[k]
+      }
+    }
+	return model
+  },
+
+  save: function() {
+    return this.adaptor.save(this)
+  }
+})
+

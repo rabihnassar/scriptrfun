@@ -1,0 +1,55 @@
+/*
+ * WebSocket based debug listener
+ */
+function loggerListen(term, enable) {
+  // Open websocket to scriptr
+  console.log("wss://"+ window.scriptr.terminal.url +"/" + window.scriptr.terminal.token)
+
+  if (enable) {
+    if (!window.scriptr.terminal.client)
+      window.scriptr.terminal.client = new WebSocket("wss://"+ window.scriptr.terminal.url +"/" + window.scriptr.terminal.token);
+
+    // Subscribe to events sent by scriptr to device
+    window.scriptr.terminal.client.onopen = function (event) {
+      window.scriptr.terminal.client.send(JSON.stringify({
+        "method":"Subscribe",
+        "params":{
+          "channel": window.scriptr.terminal.client.debugChannel
+        }
+      }), window.scriptr.terminal.client);
+    }
+
+    // Receive message and display
+    window.scriptr.terminal.client.onmessage = function(event) {
+      var msg = JSON.parse(event.data)
+      if (typeof(msg.type) != "undefined") {
+        //if (msg.level==3) 
+        term.echo(template(msg), {raw:true}) 
+      }
+    }
+
+    window.scriptr.terminal.client.onclose = function(event) {
+  console.log(event)    
+      var msg = JSON.parse(event.data)
+      if (typeof(msg.type) != "undefined") term.echo(template(msg), {raw:true}) 
+    }
+  } else {
+    if (window.scriptr.terminal.client) window.scriptr.terminal.client.close()    
+  }
+}
+
+
+window.scriptr.terminal.Interpreter.add({
+  command: 'debugchannel',
+  handler: function(params, term) {
+    if (params=='on') {
+      loggerListen(term, true)
+    } else if (params=='off') {
+      loggerListen(term, false)
+    }
+  },
+  help: "Enables/disables listenting to Framr websocket debug channel.\nUsage: debugchannel on\n debugchannel off\n"
+})
+
+
+

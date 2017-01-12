@@ -1,0 +1,72 @@
+import("devices.Location")
+
+/*
+ *	Base class type that all devices should extend
+ *	 A device properties can be set, it can be enabled, disabled, saved and deleted 
+ *   If upon instantiation a device has been passed a DeviceRepositoryAdaptor, 
+ *		the save/delete methods will invoke the Adaptors save and delete methods
+ */
+var Device = Class({
+  constructor: function(options) {
+    this.metadata = {}
+    if (options) {
+      if (options.adaptor) this.adaptor = options.adaptor
+
+      if (options.model) {
+        this.metadata = options.model
+      }
+    }
+    // Mandatory attributes
+    this.metadata.enabled = true,
+    this.metadata.cls = "devices.Device"
+  },
+
+  enable: function() {
+    this.metadata.enabled = true
+    this.save()
+  },
+  
+  disable: function() {
+    this.metadata.enabled = false
+    this.save()
+  },
+  
+  online: function() {
+    this.metadata.online = true
+    this.save()
+  },
+  
+  offline: function() {
+    this.metadata.online = false
+    this.save()
+  },
+
+  set: function(key, value) { // key could be a map, if key is a map, value is not used
+    if (typeof key == "string") {
+      	if (key!="enabled" && key!="online") this.metadata[key] = value; else logger.warn("Device - device metadata attribute ["+key+"] is reserved.")
+    } else if (typeof key == "object") {
+      // key is not a key, but a map
+        for (var k in key) {
+          if (k!="enabled" && k!="online") this.metadata[k]=key[k]; else logger.warn("Device - device metadata attribute ["+key+"] is reserved.")
+        }
+    }
+  },
+    
+  get: function(key) {
+    return (this.metadata[key])
+  },
+  
+  serialize: function() {
+    return this.metadata
+  },
+
+  save: function() {
+    if (this.adaptor) return this.adaptor.save(this); 
+    else logger.warn("Device.save - ["+this.metadata.id+"] hasn't been instantiated with a DeviceRepositoryAdaptor")
+  },
+  
+  delete: function() {
+    if (this.adaptor) return this.adaptor.delete(this)
+    else logger.warn("Device.delete - ["+this.metadata.id+"] hasn't been instantiated with a DeviceRepositoryAdaptor")
+  }
+})

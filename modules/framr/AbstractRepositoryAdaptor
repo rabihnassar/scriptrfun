@@ -1,0 +1,15 @@
+/* 		
+ *	This is an abstract class, that should be extended by all RepositoryAdaptor providers
+ */
+var AbstractRepositoryAdaptor = Class({
+  constructor: function(config) {
+    this.config = config
+    logger.debug("instantiating Framr abstract repository adaptor")
+  },
+  create: function() {},
+  update: function() {},
+  save: function() {},
+  load: function() {},
+  delete: function() {},
+  query: function() {}
+})

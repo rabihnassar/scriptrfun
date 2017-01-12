@@ -1,0 +1,10 @@
+import("devices.Device")
+
+var Wheel = Class(Device, {
+  constructor: function(model) {
+    Car.$super.call(this, model)
+    this.cls = "model.Wheel"
+    this.set("pressure", 0)
+  }
+})
+

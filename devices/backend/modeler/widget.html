@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <meta charset="UTF-8">
+    <title>Device model editor</title>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+  	<script src="transportProvider.js"></script>
+<script>
+      
+  angular.module('myWidget', [])
+  	.controller('devices', function Model($http, $scope) {
+    
+    	$scope.save =  function() {
+          transportProvider.send({
+            action: "save",
+            payload: $scope.input
+          })
+        }
+    })
+</script>
+    
+<body>
+      <div ng-app="myWidget">
+        <h3>form</h3>
+        Checkbox: <input type="checkbox" ng-model="checkbox" /> </br>
+        Input: <input ng-model="input" />
+        <input type="button" ng-click="save()" /> </br>
+      </div>
+</body>
+      
+      
+      
+      
+  
+</html>

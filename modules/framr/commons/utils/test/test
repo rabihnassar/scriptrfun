@@ -1,0 +1,8 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/"})
+
+
+import("framr.commons.utils.Md5")
+
+logger.log(Md5.get("hello"))
+
+return Md5.get("je ne sais pas quoi dire")

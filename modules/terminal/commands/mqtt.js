@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
 // use this client https://eclipse.org/paho/clients/js/
-  window.scriptrCommands.add({
+  window.scriptr.terminal.Interpreter.add({
     command: "mqtt",
     handler: function(params, term){
         term.echo("NOT IMPLEMENTED")

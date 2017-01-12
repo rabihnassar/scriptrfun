@@ -1,0 +1,35 @@
+
+function Models() {
+
+  	this.save = function(model) {}
+  
+  	this.list = function(refresh) {
+      if ((storage.local.scripts != null) && !refresh) {
+        logger.debug("Returning cached scripts list")
+        return storage.local.scripts
+      }
+      
+      logger.debug("Fetching scripts list from server")
+      
+	  var basePath = "devices/model/"
+        
+      // List server side scripts
+      var response = apsdb.callApi("ListScripts", null, null)
+
+      if (response.metadata.status == 'failure') {
+        return null
+      } else {
+        var scripts = []
+        var r = response.result.scripts
+        for (var i=0; i<r.length; i++) {
+          	//if (r[i].name.substring(0, basePath.length) == basePath)
+				//scripts.push(r[i].name.substring(basePath.length))
+          scripts.push(r[i].name)
+        }
+        
+        storage.local.scripts = scripts
+        
+        return scripts
+      }
+    }
+}

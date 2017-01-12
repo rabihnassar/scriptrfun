@@ -1,0 +1,62 @@
+
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Terminal | scriptr.io</title>
+    <meta name="Description" content="scriptr.io command line interface"/>
+    
+    <link rel="shortcut icon" type="image/x-icon" href="https://scriptr.io/themes/scriptr/images/favicon.ico">
+    <link rel="shortcut icon" href="https://scriptr.io/themes/scriptr/images/favicon.ico" type="image/png" />
+    
+    <!-- link href="terminal.css" rel="stylesheet"/ -->    
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/0.11.23/css/jquery.terminal.min.css" rel="stylesheet"/>
+    <link href="scriptr.css" rel="stylesheet"/>    
+    
+    <style>
+      #terminal {
+        height: 300px;
+        width: 300px;
+        background: #ccc;
+      }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+    <!--
+      Jquery terminal https://github.com/jcubic/jquery.terminal 
+	  Licensed under MIT license
+      Copyright (c) 2011-2016 Jakub Jankiewicz
+	-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/0.11.23/js/jquery.terminal.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    
+    <script src="lib/mousewheel.min.js"></script>
+    <script>
+      jQuery(document).ready(function($) {
+
+        tty=$('#terminal').terminal(
+         function(command, term) {
+          }, { 
+            prompt: "$", 
+            greetings: "bonjour", 
+            historyFilter: function (h) {
+              var t = h.trim().split(" ")
+
+              if (t.length>1) {
+                var arg=(t[1].split("="))[0]
+                if ((t[0]=='set') && (arg=='token')) return false
+              } 
+
+              return true
+            }
+          }      
+        )
+      
+      })
+    </script>
+  </head>
+<body>
+  <div id="terminal">
+  </div>
+</body>

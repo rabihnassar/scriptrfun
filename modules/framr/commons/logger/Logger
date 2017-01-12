@@ -1,0 +1,104 @@
+var log = require("log");
+var messaging = require("pubsub")
+
+function Logger(scope) {
+  this.levelIndex = 4
+  this.level = "DEBUG"
+  
+  this.setLogLevel = function (level) {
+    var levels = {DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3}
+    this.level = level
+    this.levelIndex = levels[level]
+  }
+  
+  var msg = function(args) {
+    var s="" 
+	
+    for (var i=0; i<args.length; i++) {
+      var obj = args[i]
+      if (obj !== null && typeof obj === 'object') s+=JSON.stringify(obj,null,"\t")+"\t"; else s+=obj+"\t"
+    }
+    return s
+  }
+  
+  function syntaxHighlight(json) {
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, 			 function(match) {
+      var cls = 'number';
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          cls = 'key';
+        } else {
+          cls = 'string';
+        }
+      } else if (/true|false/.test(match)) {
+        cls = 'boolean';
+      } else if (/null/.test(match)) {
+        cls = 'null';
+      }
+      return '<span class="' + cls + '">' + match + '</span>';
+    });
+  }      
+
+  var msgHTML = function(args) {
+    var s="" 
+	
+    for (var i=0; i<args.length; i++) {
+      var obj = args[i]
+      if (obj !== null && typeof obj === 'object') s+=syntaxHighlight(JSON.stringify(obj,undefined,4))+"\t"; else s+=obj+"\t"
+    }
+    return s
+  }
+  
+  var logLevels = ['debug', 'info', 'warn', 'error']
+
+  for (var i=0; i<logLevels.length; i++) {
+    this[logLevels[i]] = (function(level) {
+      return function() {
+        if (this.levelIndex>level) return
+
+        var logTxt = msg(arguments)
+        console[logLevels[level]](logTxt)
+        
+        var msgTxt = JSON.stringify({type: logLevels[level], timestamp: new Date(), level: level, txt: logTxt})
+        var msgTxtHTML = JSON.stringify({type: logLevels[level], timestamp: new Date(), level: level, txt: msgHTML(logTxt)})
+        messaging.publish("debug", msgTxt)
+
+        log.setLevel("DEBUG") //levels are ERROR | WARN | INFO | DEBUG | OFF
+        log[logLevels[level]](logTxt);
+      }
+    })(i)
+  }
+  
+  this.startProfiling = function() {
+    this.startTime = (new Date()).getTime()
+  }
+
+  this.getLapse = function() {
+    var lapse = (new Date()).getTime()-this.startTime
+    this.debug(lapse + "ms passed since startProfiling was invoked")
+  }
+  
+  this.dir = function(obj) {
+    var s = "this is object"
+    for (var k in obj) {
+      s += msg(k+" ---> "+obj[k])
+    }
+    console.log(s)
+  }
+  
+  scope.logger = {
+    setLevel: this.setLogLevel,
+
+    debug: this.debug,
+    info: this.info,
+    warn: this.warn,
+    error: this.error,
+    log: this.debug,
+    startProfiling: this.startProfiling,
+    getLapse: this.getLapse,
+    dir: this.dir
+  }
+  
+  return scope.logger
+}
