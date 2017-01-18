@@ -1,0 +1,4 @@
+var Files = require("refactor/Files").Files()
+
+if (!request.parameters.src || !request.parameters.dest) console.log('Params src and dest should be provided.');
+else Files.renameFolder(request.parameters.src, request.parameters.dest)

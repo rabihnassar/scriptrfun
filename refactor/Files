@@ -1,0 +1,72 @@
+var logger = require("log");
+logger.setLevel("DEBUG"); //levels are ERROR | WARN | INFO | DEBUG | OFF
+
+function Files() {
+  	var list = function(refresh) {
+      if ((storage.local.filesList != null) && !refresh) {
+        logger.debug("Returning cached scripts list")
+        return storage.local.filesList
+      }
+      
+      logger.debug("Fetching scripts list from server")
+      
+	  var basePath = ""
+        
+      // List server side scripts
+      var response = apsdb.callApi("ListFiles", null, null)
+      if (response.metadata.status == 'failure') {
+        return null
+      } else {
+        var filesList = []
+
+        response.result.files.forEach(function(f) {
+          filesList.push(f.name)
+        })
+        
+        storage.local.filesList = filesList
+        
+        return filesList
+      }
+    }
+
+    var load = function(path) {
+      var response = apsdb.callApi("GetScript", {"apsdb.scriptName":path}, null)
+      if (response.metadata.status == 'failure') {
+        return null
+      } else {
+        var r = JSON.parse(response.result)
+        console.debug(JSON.stringify(r, null, 4))
+      }
+    }
+
+    var save = function(path, script, acl) {}
+    
+    var rename = function(name, newName) {
+      var response = apsdb.callApi("SaveScript", {"apsdb.scriptName":name, "apsdb.newScriptName":newName, "apsdb.update":"true"}, null)
+      if (response.metadata.status == 'failure') {
+        console.debug(JSON.stringify(response, null, 4))
+        return null
+      } else {
+        return true
+      }
+    }
+    
+    // rename modules/framr framr
+    var renameFolder = function(path, newPath) {
+      var l = list(true)
+      l.forEach(function(p){
+        if (p.indexOf(path)==0) {
+          logger.debug("Moving "+p+" to "+newPath+p.substring(path.length))
+          rename(p, newPath+p.substring(path.length))
+        }
+      })
+    }
+    
+    return {
+      list: list,
+      load: load,
+      save: save,
+      rename: rename,
+      renameFolder: renameFolder
+    }
+}

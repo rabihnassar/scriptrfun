@@ -1,0 +1,4 @@
+var Files = require("refactor/Files").Files()
+
+if (!request.parameters.path) console.log('Param path should be provided.');
+else Files.delete(request.parameters.path)

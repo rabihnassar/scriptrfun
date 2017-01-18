@@ -1,0 +1,2 @@
+var Files = require("refactor/Files").Files()
+return Files.list()
