@@ -1,0 +1,154 @@
+implement this animation and horizontal layout: http://localhost/mxgraph-master/javascript/examples/autolayout.html 
+
+hoever behavior
+http://localhost/mxgraph-master/javascript/examples/hoverstyle.html
+
+use this shape for the flow diagrams:
+http://localhost/mxgraph-master/javascript/examples/boundary.html
+
+Hover icons:
+http://localhost/mxgraph-master/javascript/examples/hovericons.html
+
+http://localhost/mxgraph-master/javascript/examples/contexticons.html
+
+      function showMessage(panel) {
+        w2ui.layout.message('main', {
+          width: 300,
+          height: 150,
+          body: '<div class="w2ui-centered">Some Text '+ (new Date()).getTime() +'</div>',
+          buttons: '<button class="w2ui-btn" onclick="w2ui.layout.message(\'main\')">Ok</button>'
+        })
+      }
+
+
+    <div style="display:none;">
+      <div>
+        <button class="ui-button ui-widget ui-corner-all" id="SaveButton" onclick="g.save()">Save</button>
+        <button class="ui-button ui-widget ui-corner-all"  onclick="g.load()">Load</button>
+        |
+        <button class="ui-button ui-widget ui-corner-all" onclick="g.graph.zoomIn()">+</button>
+        <button class="ui-button ui-widget ui-corner-all" onclick="g.graph.zoomOut()">-</button>
+        |
+        <button class="ui-button ui-widget ui-corner-all" onclick="g.graph.zoomActual()">actual</button>
+        <button class="ui-button ui-widget ui-corner-all" onclick="g.graph.fit()">fit</button>
+      </div>
+    </div>
+    <div id="editor">
+      <div id="hierarchyx"></div>
+      <div id="modelx"></div>
+    </div>
+
+    <div id="messages"></div>
+
+========
+        onClick: function(event) {
+          /*
+          console.log(event)
+          console.log(event.column, event.recid)
+          if (event.originalEvent.target==null) {
+			showMenu($("#grid_properties_rec_"+event.recid))      // this is a hack need to find a better way     
+          }
+          */
+        }  
+=========
+
+var people = [
+    { id: 1, text: 'John Cook' },
+    { id: 2, text: 'Steve Jobs' },
+    { id: 3, text: 'Peter Sanders' },
+    { id: 4, text: 'Mark Newman' },
+    { id: 5, text: 'Addy Osmani' },
+    { id: 6, text: 'Paul Irish' },
+    { id: 7, text: 'Doug Crocford' },
+    { id: 8, text: 'Nicolas Cage' }
+];      
+var grid = { 
+        name: 'properties', 
+        show: { 
+            toolbar: true,
+            footer: true,
+            toolbarSave: true
+        },
+        columns: [                
+            { field: 'recid', caption: 'ID', size: '50px', sortable: true, resizable: true },
+            { field: 'color', caption: 'color', size: '80px', sortable: true, resizable: true, 
+                editable: { type: 'color' }
+            },
+            { field: 'select', caption: 'select', size: '100px', sortable: true, resizable: true, 
+                editable: { type: 'select', items: [{ id: '', text: '' }].concat(people) }, 
+                render: function (record, index, col_index) {
+                    var html = '';
+                    for (var p in people) {
+                        if (people[p].id == this.getCellValue(index, col_index)) html = people[p].text;
+                    }
+                    return html;
+                }
+            },
+            { field: 'check', caption: 'check', size: '60px', sortable: true, resizable: true, style: 'text-align: center',
+                editable: { type: 'checkbox', style: 'text-align: center' } 
+            }
+        ],
+        toolbar: {
+            items: [
+                { id: 'add', type: 'button', caption: 'Add Record', icon: 'w2ui-icon-plus' }
+            ],
+            onClick: function (event) {
+                if (event.target == 'add') {
+                    w2ui.grid.add({ recid: w2ui.grid.records.length + 1 });
+                }
+            }
+        },
+        records: [
+            { recid: 1, int: 100, money: 100, percent: 55, date: '1/1/2014', combo: 'John Cook', check: true },
+            { recid: 2, int: 200, money: 454.40, percent: 15, date: '1/1/2014', combo: 'John Cook', check: false, list: { id: 2, text: 'Steve Jobs' } },
+            { recid: 3, int: 350, money: 1040, percent: 98, date: '3/14/2014', combo: 'John Cook', check: true },
+            { recid: 4, int: 350, money: 140, percent: 58, date: '1/31/2014', combo: 'John Cook', check: true, list: { id: 4, text: 'Mark Newman' } },
+            { recid: 5, int: 350, money: 500, percent: 78, date: '4/1/2014', check: false },
+            { recid: 6, text: 'some text', int: 350, money: 440, percent: 59, date: '4/4/2014', check: false },
+            { recid: 7, int: 350, money: 790, percent: 39, date: '6/8/2014', check: false },
+            { recid: 8, int: 350, money: 4040, percent: 12, date: '11/3/2014', check: true },
+            { recid: 9, int: 1000, money: 3400, percent: 100, date: '2/1/2014',
+                style: 'background-color: #ffcccc', editable: false }
+        ]
+    }      
+======
+
+
+
+
+     var icons = [
+        {id:1, icon:"Device"},
+        {id:2, icon:"Vehicle"},
+        {id:3, icon:"Car"},
+        {id:4, icon:"Thermostat"},
+        {id:5, icon:"Nest"}
+      ]    
+    
+    $('#properties').w2form({ 
+      name     : 'properties',
+      formURL  : 'propertiesForm.html', 
+      fields: [
+        { field: 'className', type: 'text', required: true },
+        { field: 'superClass', type: 'text', required: true },
+        { field: 'description', type: 'text', required: true },
+        { field: 'icon', type: 'list', required: true, 
+         options: { items: ["Device", "Vehicle", "Car", "Thermostat", "Nest"] } }
+      ],
+      actions: {
+        reset: function () {
+          this.clear();
+        },
+        save: function () {
+          var obj = this;
+        }
+      }
+    });    
+    
+    
+    
+    
+    
+    
+    
+    
+    

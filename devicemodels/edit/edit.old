@@ -1,0 +1,57 @@
+<html>
+<head>
+	<title>scriptr.io device model Editor</title>
+
+  <link href="editor.css" rel="stylesheet" type="text/css" />  
+
+	<!-- Sets the basepath for the library if not in same directory -->
+	<script type="text/javascript">
+		mxBasePath = 'https://jgraph.github.io/mxgraph/javascript/src';
+	</script>
+
+	<!-- Loads and initializes the library -->
+	<script type="text/javascript" src="https://jgraph.github.io/mxgraph/javascript/src/js/mxClient.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+
+  <script type="text/javascript" src="skin.js"></script>
+  <script type="text/javascript" src="graph.js"></script>
+  
+	<!-- Example code -->
+	<script type="text/javascript">
+      	jq2 = jQuery.noConflict();
+      
+        jq2(function( $ ) {
+
+          var graph = new Graph($, document, "#hierarchy", {
+            levelDistance: 40,
+            nodeDistance: 10,
+            cellHeight: 50,
+            maxCellWidth: 120
+          })
+          
+          root = graph.getRoot()
+          dev1 = graph.add(root)
+          dev11 = graph.add(dev1)
+          dev2 = graph.add(root)
+          dev21 = graph.add(dev2)
+          dev22 = graph.add(dev2)
+          
+
+        })      
+	</script>
+</head>
+
+<!-- Calls the main function after the page has loaded. Container is dynamically created. -->
+<body>	
+    <div>
+      <div>
+        <button id="SaveButton" onclick="save()">Save</button>
+        <button onclick="load()">Load</button>
+      </div>
+    </div>
+    <div id="editor">
+      <div id="hierarchy"></div>
+      <div id="model"></div>
+    </div>
+</body>
+</html>

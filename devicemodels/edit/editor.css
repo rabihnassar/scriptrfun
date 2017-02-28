@@ -1,0 +1,34 @@
+body {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 10px;
+  line-height: 1.42857143;
+  color: #333;
+}
+
+#hierarchy {  
+    background-size: 10px 10px;
+    background-image: linear-gradient(to right, #eee 1px, transparent 1px), 
+      					linear-gradient(to bottom, #eee 1px, transparent 1px);
+  	border: solid 1px #ddd; 
+  	float: left;
+  	height: 500px;
+  	width: 50%;
+}
+
+#model {
+	background: #eee;
+  	float: left;
+  	height: 500px;
+  	position:relative;
+  	width: 45%;
+}
+
+#dialog {
+  width: 100%;
+    height: 100%;
+  background: #aaa;
+}
+
+#messages {
+  display: none;
+}

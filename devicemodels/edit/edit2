@@ -1,0 +1,119 @@
+<html>
+<head>
+	<title>scriptr.io device model Editor</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://scriptr.io/themes/scriptr/images/favicon.ico">
+    <link rel="shortcut icon" href="https://scriptr.io/themes/scriptr/images/favicon.ico" type="image/png" />
+
+    <link rel="stylesheet" href="css/editor2.css" type="text/css" />  
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="lib/w2ui.min.css">
+
+	<!-- Sets the basepath for the library if not in same directory -->
+	<script type="text/javascript">
+		mxBasePath = 'https://jgraph.github.io/mxgraph/javascript/src';
+      	scriptr = {}
+	</script>
+
+	<!-- Loads external libraries -->
+	<script type="text/javascript" src="https://jgraph.github.io/mxgraph/javascript/src/js/mxClient.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css" />
+
+  <!-- script src="lib/underscore.min.js"></script>
+	<script src="lib/w2ui.min.js"></script -->
+  
+  
+  <!-- custom libraries -->
+  	<script type="text/javascript" src="js/Skin.js"></script>
+  	<script type="text/javascript" src="js/HierarchyGraph.js"></script>
+  	<script type="text/javascript" src="js/Utils.js"></script>
+    <script type="text/javascript" src="js/Tabs.js"></script>
+    <script type="text/javascript" src="js/PropertiesSheet.js"></script>
+  	<!-- script type="text/javascript" src="js/MessageBundle.js"></script -->
+  
+	<script type="text/javascript">
+      //
+      // initializations
+      //
+      jq2 = jQuery.noConflict();
+
+      //
+      // Build sample graph
+      //
+      var g
+      function buildGraph() {
+        g = new scriptr.HierarchyGraph('#hierarchy')
+        var vehicle = g.add('model.Device') 
+        var device = g.getRoot()
+        var vehicle = g.add('model.Vehicle', device, scriptr.Skin.styles.images.vehicle) 
+        var car = g.add('model.Car', vehicle, scriptr.Skin.styles.images.car) 
+        var truck = g.add('model.Truck', vehicle, scriptr.Skin.styles.images.truck) 
+        var thermometer = g.add('model.Thermostat', device, scriptr.Skin.styles.images.thermostat) 
+        var nest = g.add('model.Nest', thermometer, scriptr.Skin.styles.images.nest)
+
+        console.log(nest)
+        
+        return g
+      }
+
+      jq2(function($) {
+        var pstyle = 'border: 0px solid #dfdfdf; padding: 0px; background: #fff;';
+        $('#hierarchyEditor').w2layout({
+          name: 'layout',
+          panels: [
+            { type: 'main', style: pstyle + 'border-top: 0px;' },
+            { type: 'right', size: 440, resizable: true, style: pstyle, content: '' }
+          ]
+        });
+		w2ui.layout.hide("right")			            
+        
+        var d = $("<div></div>").appendTo(w2ui.layout.el('main'))
+        d.attr("id", "hierarchy")
+          
+          
+        var g = buildGraph()
+		var tabs = scriptr.Tabs($)
+        g.onOpen(function(name) {
+          	var path = "devicemodels/demoApp/"+name.replace(".", "/")
+			tabs.openTab(name, path)
+        })
+        
+        var propertiesSheet = new scriptr.PropertiesSheet("right")
+        
+        g.onSelect(function(name) {
+          w2ui.layout.show("right")
+          propertiesSheet.open(name.split(".")[1])
+        })
+        g.onUnSelect(function() {
+          w2ui.layout.hide("right")			            
+        })
+        
+    $().w2grid({ 
+        name: 'grid', 
+        columns: [                
+            { field: 'property', caption: 'Property', size: '50%', sortable: true, attr: 'align=left' },
+            { field: 'value', caption: 'Value', size: '50%', attr: 'align=left', editable: { type: 'text' }   },
+        ]
+    });
+        
+        w2ui.layout.show("right")
+          propertiesSheet.open("Device")
+        
+      })
+	</script>
+</head>
+
+<!-- Page passes the container for the graph to the program -->
+  <body>
+    
+    <div id="tabs" style="width: 100%;"></div>
+	<div id="tab-content" style="padding: 0px 0px; height: 100%;">
+      <div id="hierarchyEditor" style="width: 100%; height: 100%;"></div>
+    	<!--div id="hierarchy"></div-->
+    </div>
+  </body>
+</html>
+

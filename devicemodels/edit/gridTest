@@ -1,0 +1,122 @@
+<html>
+<head>
+	<title>scriptr.io device model Editor</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://scriptr.io/themes/scriptr/images/favicon.ico">
+    <link rel="shortcut icon" href="https://scriptr.io/themes/scriptr/images/favicon.ico" type="image/png" />
+
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="lib/w2ui.min.css">
+    <link rel="stylesheet" href="css/grid.css" type="text/css" />  
+
+	<!-- Loads external libraries -->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="lib/w2ui.min.js"></script>
+  
+  
+  <!-- custom libraries -->
+  	<!-- script type="text/javascript" src="js/Utils.js"></script-->
+  
+  <script type="text/javascript">
+    jq2 = jQuery.noConflict();
+
+    var pstyle = 'border: 1px solid #dfdfdf; padding: 5px;'
+    jq2(function($) {
+      var layout = {
+        name: 'layout',
+        panels: [
+          { type: 'left', size: "50%", resizable: true, style: pstyle, content: 'top' },
+          { type: 'main', size: "50%", style: pstyle },
+        ]
+      }
+
+
+      $('#layout').w2layout(layout)
+
+      var records = []
+
+      n = $("<div></div>").appendTo(w2ui.layout.el('main'))
+      n.attr("id", "properties")
+      var grid = { 
+        name: 'properties', 
+        columns: [                
+          { field: 'property', caption: 'property', size: '50%' },
+          { field: 'value', caption: 'Value', size: '50%' }
+        ]
+      }
+      $("#properties").w2grid(grid)
+
+      n = $("<div></div>").appendTo(w2ui.layout.el('main'))
+      n.attr("id", "attributes")
+      var grid = { 
+        name: 'attributes', 
+        columns: [                
+          { field: 'attribute', caption: 'Attribute', size: '50%' },
+          { field: 'type', caption: 'Type', size: '50%' },
+          { field: 'defaultValue', caption: 'Default Value', size: '50%' }
+        ]
+      }
+      $("#attributes").w2grid(grid)
+      
+      n = $("<div></div>").appendTo(w2ui.layout.el('main'))
+      n.attr("id", "methods")
+      var grid = { 
+        name: 'methods', 
+        columns: [                
+          { field: 'method', caption: 'Methods', size: '50%' },
+          { field: 'code', caption: 'Code', size: '50%' }
+        ]
+      }
+      $("#methods").w2grid(grid)
+      
+    var p = {
+      url: "https://rabih.scriptrapps.io/devicemodels/edit/backend/get2",
+      data: {className: "Vehicle"},
+      method: "GET",
+      dataType: 'json',
+      success: function(data) {
+        console.log(data.response.result)
+
+        w2ui.properties.clear()
+        w2ui.attributes.clear()
+        w2ui.methods.clear()
+
+        var model = JSON.parse(data.response.result)
+        var properties = [], methods = [], attributes = []
+        var i=0
+        for (var k in model) {
+          var value = model[k]
+			if (k!="attributes") if (k!="_methods") if (k!="_types")
+              properties.push({recid: i++, property: k, value: value})
+        }
+        
+        for (var k in model._methods) {
+          methods.push({recid: i++, method: k, code: model._methods[k]});
+        }
+        w2ui.properties.add(properties)
+        w2ui.methods.add(methods)
+
+        
+        for (var k in model.attributes) {
+          attributes.push({recid: i++, attribute: k, type: model._types[k] , defaultValue: model.attributes[k]})
+        }
+        w2ui.attributes.add(attributes)
+        
+      
+      
+      },
+      error: function(data) {
+      }
+    }
+    $.ajax(p)
+      
+       
+    })
+  </script>
+</head>
+  <body>
+    <div id="layout"></div>	    
+  </body>
+</html>
+

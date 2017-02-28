@@ -1,0 +1,116 @@
+<html>
+<head>
+	<title>scriptr.io device model Editor</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://scriptr.io/themes/scriptr/images/favicon.ico">
+    <link rel="shortcut icon" href="https://scriptr.io/themes/scriptr/images/favicon.ico" type="image/png" />
+
+    <link href="css/editor.css" rel="stylesheet" type="text/css" />  
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="lib/w2ui.min.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="lib/fontAwesome.min.css" />	<!-- script src="https://use.fontawesome.com/3a4abfc7f3.js"></script -->  
+  
+  
+  
+	<!-- Sets the basepath for the library if not in same directory -->
+	<script type="text/javascript">
+		mxBasePath = 'https://jgraph.github.io/mxgraph/javascript/src';
+      	scriptr = {}
+	</script>
+
+	<!-- Loads external libraries -->
+	<script type="text/javascript" src="https://jgraph.github.io/mxgraph/javascript/src/js/mxClient.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="lib/underscore.min.js"></script>
+	<script src="lib/w2ui.min.js"></script>
+  
+  
+  <!-- custom libraries -->
+  	<script type="text/javascript" src="js/Skin.js"></script>
+  	<script type="text/javascript" src="js/HierarchyGraph.js"></script>
+  	<script type="text/javascript" src="js/Utils.js"></script>
+  
+	<script type="text/javascript">
+      	jq2 = jQuery.noConflict();
+        _.templateSettings = {
+          interpolate: /\{\{(.+?)\}\}/g
+        }; 
+      	
+      	var g
+      
+        jq2(function($) {
+          
+          // loadMessages
+          $("#messages").load('messages.html', null , function(text){})
+
+          function parseHelp(tag, params) {
+            var html = jQuery("#"+tag).html()
+            if (html) {
+              var template = _.template(html)
+              return template(params)
+            } 
+            return ""
+          }
+          
+          g = new scriptr.HierarchyGraph('#hierarchy')
+          var vehicle = g.add('model.Device') 
+          var device = g.getRoot()
+          var vehicle = g.add('model.Vehicle', device, scriptr.Skin.styles.images.vehicle) 
+          var car = g.add('model.Car', vehicle, scriptr.Skin.styles.images.car) 
+          var truck = g.add('model.Truck', vehicle, scriptr.Skin.styles.images.truck) 
+          var thermometer = g.add('model.Thermostat', device, scriptr.Skin.styles.images.thermostat) 
+          var nest = g.add('model.Nest', thermometer, scriptr.Skin.styles.images.nest)
+
+          console.log(nest)
+
+          $('#toolbar').w2toolbar({
+        name: 'toolbar',
+        items: [
+            { type: 'button', id: 'item2', text: 'Button', icon: 'fa-wrench' },
+            { type: 'break' },
+            { type: 'check', id: 'item3', text: 'Check 1', icon: 'fa-star' },
+            { type: 'check', id: 'item4', text: 'Check 2', icon: 'fa-heart' },
+            { type: 'break' },
+            { type: 'radio', id: 'item5', group: '1', text: 'Radio 1', icon: 'fa-star', checked: true },
+            { type: 'radio', id: 'item6', group: '1', text: 'Radio 2', icon: 'fa-heart' },
+            { type: 'spacer' },
+            { type: 'button', id: 'item7', text: 'Button', icon: 'fa-star' }
+        ],
+        onClick: function (event) {
+            console.log('Target: '+ event.target, event);
+        }
+    });
+        })
+	</script>
+</head>
+
+<!-- Page passes the container for the graph to the program -->
+  <body>
+    <div style="height:100px;" class="fa-star"></div>
+    <i class="fa fa-camera-retro"></i> fa-camera-retro
+    <div>
+      <div>
+        <div id="toolbar" style="padding: 4px; border: 1px solid #dfdfdf; border-radius: 3px"></div>
+      </div>
+      <div>
+        <button class="ui-button ui-widget ui-corner-all" id="SaveButton" onclick="g.save()">Save</button>
+        <button class="ui-button ui-widget ui-corner-all"  onclick="g.load()">Load</button>
+        |
+        <button class="ui-button ui-widget ui-corner-all" onclick="g.graph.zoomIn()">+</button>
+        <button class="ui-button ui-widget ui-corner-all" onclick="g.graph.zoomOut()">-</button>
+        |
+        <button class="ui-button ui-widget ui-corner-all" onclick="g.graph.zoomActual()">actual</button>
+        <button class="ui-button ui-widget ui-corner-all" onclick="g.graph.fit()">fit</button>
+      </div>
+    </div>
+    <div id="editor">
+      <div id="hierarchy"></div>
+      <div id="model"></div>
+    </div>
+
+    <div id="messages"></div>
+
+  </body>
+</html>
+

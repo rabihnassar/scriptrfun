@@ -1,0 +1,19 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/"})
+
+import("framr.commons.Underscore")
+
+var template = "{% name %}"
+
+var script
+
+var params = {
+//  "apsdb.scriptName":request.params.scriptName,
+  "apsdb.script":script
+}
+
+//apsdb.callApi("SaveDocument", params, null);
+
+var template = _.template("Hello {{ name }}!");
+
+
+return template({name: "Mustache"}); 

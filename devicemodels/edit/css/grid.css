@@ -1,0 +1,17 @@
+#layout {
+  height: 100%;
+  width: 100%;
+}
+
+#properties {
+  background: red;
+  height:33%;
+}
+#attributes {
+  background: green;
+  height:33%;
+}
+#methods {
+  background: blue;
+  height:33%;
+}

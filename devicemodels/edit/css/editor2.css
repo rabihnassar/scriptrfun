@@ -1,0 +1,100 @@
+body {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 10px;
+  line-height: 1.42857143;
+  color: #333;
+  overflow: hidden;
+}
+
+#hierarchy {  
+    background-size: 10px 10px;
+    background-image: linear-gradient(to right, #eee 1px, transparent 1px), 
+      					linear-gradient(to bottom, #eee 1px, transparent 1px);
+  background-position-x: -1px;
+  background-position-y: -1px;
+  
+  	border: solid 1px #ddd; 
+  	float: left;
+  	height: 100%;
+  	width: 100%;
+}
+
+.w2ui-tab {
+  background-color: #f2f4f8 !important;
+}
+
+.w2ui-grid-toolbar .w2ui-reset table {
+  font-size: 9px !important;
+}
+
+#tabs_tabs_tab_hierarchy .w2ui-tab {
+  background-color:  #333 !important;
+  color: white;
+}
+
+.active {
+  background-color: #fff !important;
+}
+
+#model {
+	background: #eee;
+  	float: left;
+  	height: 100%;
+  	position:relative;
+  	width: 45%;
+}
+
+#dialog {
+  width: 100%;
+    height: 100%;
+  background: #aaa;
+}
+
+#messages {
+  display: none;
+}
+
+/* Begin: properties form CSS */
+.propertiesForm {
+}
+/* Begin: proerties form CSS */
+
+
+/* Begin: popup menu CSS */
+  body div.mxPopupMenu {
+    -webkit-box-shadow: 1px 1px 3px #C0C0C0;
+    -moz-box-shadow: 1px 1px 3px #C0C0C0;
+    box-shadow: 1px 1px 3px #C0C0C0;
+    background: white;
+    position: absolute;
+    border: 1px solid #e7e7e7;
+    padding: 1px;
+  }
+  body table.mxPopupMenu {
+    border-collapse: collapse;
+    margin: 0px;
+  }
+  body tr.mxPopupMenuItem {
+    color: black;
+    cursor: default;
+  }
+  body td.mxPopupMenuItem {
+    padding: 3px 10px 3px 10px;
+    font-family: Arial;
+    font-size: 8pt;
+  }
+  body td.mxPopupMenuIcon {
+    background-color: white;
+    padding: 0px;
+  }
+  body tr.mxPopupMenuItemHover {
+    background-color: #eeeeee;
+    color: black;
+  }
+  table.mxPopupMenu hr {
+    border-top: solid 1px #cccccc;
+  }
+  table.mxPopupMenu tr {
+    font-size: 4pt;
+  }
+/* End: popup menu CSS */

@@ -1,0 +1,87 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/;./devicemodels/demoApp/;"})
+
+var definition = {}
+
+definition.Device = {
+  super: "",
+  className: "Device",
+  description: "",
+  icon: "Device",
+  tags: [{tag:"owner", value:"rabih"}, {tag:"project", value:"killerbots"}],
+
+  attributes: {
+    location: "", //new Location(),
+    online: true,
+    enabled: true
+  },
+  
+  constructor: function() {
+	logger.log("constructor here")    
+  },
+  
+  move: function() {
+    this.set("location", new Location(23,245))
+  }
+}
+
+definition.Vehicle = {
+  super: "Device",
+  className: "Vehicle",
+  description: "",
+  icon: "Vehicle",
+  tags: [{type: "machine"}],
+
+  attributes: {
+    speed: 80,
+    started: false,
+    type: "gasoline"
+  },
+  
+  start: function() {
+    this.set("started", true)
+  },
+  
+  stop: function() {
+    this.set("started", false)
+  }
+}
+
+  var getTypes = function(model) {
+    var types = {}
+    for (k in model) {
+      if (typeof model[k] == "string") {
+        types[k] = "string"
+      } else if (typeof model[k] == "number") {
+        types[k] = "number"
+      } else if (typeof model[k] == "boolean") {
+        types[k] = "boolean"
+      } else if (typeof model[k] == "object") {
+        if (model[k] instanceof Location) {
+          types[k] = "geospatial"
+        } else if (model[k] instanceof Date) {
+          types[k] = "date"
+        }
+      }
+    }
+    return types
+  }
+
+
+function get(className) {
+  var model = definition[className]
+  model["_methods"] = {}
+  for (var k in model) {
+    if (k=="attributes") {
+      model["_types"] = getTypes(model.attributes)
+    }
+    if (typeof model[k] == "function") {
+      model["_methods"][k] = model[k].toString()
+      delete model[k]
+      //model[k] = model[k].toString()
+    }
+  }
+  
+  return JSON.stringify(model)	  
+}
+
+return get(request.parameters.className)

@@ -1,0 +1,71 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/;./devicemodels/demoApp/;"})
+
+_oldClass = Class
+Class = function(a,b) {
+  var methods = []
+  var attributes = []
+  var events = []
+  
+  var deconstruct = function(model) {
+    for (k in model) {
+      if (typeof model[k] == "function") {
+        if (k.indexOf("on")==0) events.push({name:k, code:model[k].toString()});
+        else methods.push({name:k, code:model[k].toString()})
+      } else if (typeof model[k] == "string") {
+        attributes.push({name:k, type:"string"})
+      } else if (typeof model[k] == "number") {
+        attributes.push({name:k, type:"number"})
+      } else if (typeof model[k] == "boolean") {
+        attributes.push({name:k, type:"boolean"})
+      } else if (typeof model[k] == "object") {
+        if (model[k] instanceof Location) {
+          attributes.push({name:k, type:"geospatial"})
+        } else if (model[k] instanceof Date) {
+          attributes.push({name:k, type:"date"})
+        }
+      }
+    }
+    
+    console.log(JSON.stringify(attributes))
+    console.log(methods)
+  }
+  
+  if (b==undefined) {
+    deconstruct(a)
+    return _oldClass(a)
+  } else {
+    deconstruct(b)
+    return _oldClass(a,b)
+  }
+}
+
+var definition = {
+  
+  cls: "Person",
+  height: 180,
+  
+  constructor: function(name, height) {
+    this.name = name
+    this.height = height
+    logger.log('constructor')
+  },  
+
+  tell: function(param) {
+    logger.log(param, this.name, this.height)
+  }
+}
+var Person = Class(definition)
+
+var guy1 = new Person('guy1', 150)
+guy1.height = 167
+var guy2 = new Person('guy2', 187)
+
+guy1.tell("abc")
+guy2.tell("def")
+
+logger.log(guy1)
+logger.log(guy2)
+//logger.log(guy2.toString())
+
+
+
