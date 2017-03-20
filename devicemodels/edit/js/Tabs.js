@@ -31,7 +31,9 @@ scriptr.Tabs = function(jq2) {
       tabs: [
         { id: 'hierarchy', caption: 'Models' }
       ],
-      onClick: onclick,
+      onClick: function(event) {
+        console.log('object '+ event.target )
+      },
       onClose: function(event) {
         console.log('object '+ event.target + ' is destroyed')
         $('#tab-content-'+event.target.replace(".", "\\.")).remove()
