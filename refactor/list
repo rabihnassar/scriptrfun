@@ -1,2 +1,5 @@
-var Files = require("refactor/Files").Files()
-return Files.list()
+var Files = require("refactor/Files").Files(request.parameters.refresh)
+
+logger.debug('hi')
+
+//return Files.list()

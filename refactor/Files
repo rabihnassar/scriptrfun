@@ -3,6 +3,8 @@ logger.setLevel("DEBUG"); //levels are ERROR | WARN | INFO | DEBUG | OFF
 
 function Files() {
   	var list = function(refresh) {
+      if (refresh && (refresh=="true")) refresh = true
+logger.debug(refresh)      
       if ((storage.local.filesList != null) && !refresh) {
         logger.debug("Returning cached scripts list")
         return storage.local.filesList
