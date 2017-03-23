@@ -1,0 +1,12 @@
+ if (request.parameters.temperature>-8) {
+     sendMail("manager@freezers.com", 
+        "Freezer 1", "Alert: It's getting hot in here", 
+        "Do something!")
+} 
+else { 
+     if (request.parameters.temperature>storage.local.lastTemp) 
+        sendMail("manager@freezers.com", 
+           "Freezer 1", "Warning: My temperature is rising", 
+           "just FYI")
+}
+storage.local.lastTemp = request.temperature;

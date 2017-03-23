@@ -1,0 +1,2 @@
+require("/lib/framr/Framr").init(this, ["./", "../lib/"], "/demo/")
+logger.setLevel("DEBUG")
