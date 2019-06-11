@@ -1,0 +1,12 @@
+<div class="item" onclick='sendEvent("itemSelect", "one", this)'>
+	One
+</div>
+<div class="item" onclick='sendEvent("itemSelect", "two", this)'>
+	Two
+</div>
+<div class="item" onclick='sendEvent("itemSelect", "three", this)'>
+    Three
+</div>
+<div class="item" onclick='sendEvent("itemSelect", "four", this)'>
+    Four
+</div>

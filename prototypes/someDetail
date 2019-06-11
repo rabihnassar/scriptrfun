@@ -1,0 +1,16 @@
+<script>
+    var scriptTag = document.scripts[document.scripts.length - 1];
+    var parentTag = scriptTag.parentNode;
+    console.dir(parentTag)    
+
+    addListener (parentTag.id, 'showItem', function (value) {
+        console.log("received event [showItem] with value: "+value)
+        parentTag.getElementsByClassName("detail")[0].innerHTML = value;
+        
+        console.dir(parentTag.getElementsByClassName("detail")[0])
+    })
+</script>
+
+<div class='detail'>
+    Nothing for now
+</div>

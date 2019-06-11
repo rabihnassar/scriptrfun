@@ -1,0 +1,45 @@
+require("/modules/framr/Framr").init(this, {classPath: "./modules/"})
+var loadFile = require("/prototypes/lib/loadFile").loadFile
+
+logger.setLevel("DEBUG")
+
+var PageManager = Class({
+  render: function(page) {
+      var script = ""
+      var html = "<html><head>"
+      html+= "<script src='clientPageManager.js'></script></head><body>\n\r"      
+
+      if (page.styleSheet) html+= "<link href='"+page.styleSheet+"' rel='stylesheet'>\n\r" 
+
+      if (page.sections) {
+          for (var p in page.sections) {
+              html+="<div id='"+p+"' class='section'>"+ loadFile(page.sections[p].component) +"</div>\n\r" // insert HTML of component
+
+              // event bindings
+              if (page.sections[p].events) for (var event in page.sections[p].events) { //iterate over emitters in a section
+                  script += "if (!events['"+p+"']) events['"+p+"']={};\n\r" // create the client side event object
+                  script += "events['"+p+"']['"+event+"'] =" + page.sections[p].events[event] + ";\n\r"
+              }                    
+          }
+      }
+      html+="<script>\r\n"
+      html+=script  
+      html+="</script>\r\n"
+
+      return html+"</body></html>"
+  }
+
+})
+
+var pageManager = new PageManager()
+
+var loadFile = require("/prototypes/lib/loadFile").loadFile
+
+var txt = loadFile(request.parameters.page)
+
+logger.log(txt)
+
+var page = JSON.parse(txt)
+response.write(pageManager.render(page));
+response.close();
+

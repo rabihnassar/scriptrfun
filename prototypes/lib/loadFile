@@ -1,0 +1,23 @@
+function loadFile(url) {
+    // require the "http" module
+    var http = require("http");
+    // build a request. You should at least provide the "url" field
+    var requestObject = {
+        "url" : "https://rabih.scriptrapps.io/prototypes/"+url,
+        "method" : "GET" // optional if GET
+    }
+    
+    logger.log(requestObject)
+    
+    // send the request by invoking the request function
+    // of the http module and store the returned response object
+    var response = http.request(requestObject);
+    // get the body of the response as a string
+    var responseBodyStr = response.body;
+    // check the status of the response
+    if (response.status == "200") {
+        return responseBodyStr;
+    } else {
+        return "ERROR: " + response.status;
+    }
+}

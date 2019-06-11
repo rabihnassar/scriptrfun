@@ -1,0 +1,19 @@
+{
+	"styleSheet": "https://rabih.scriptrapps.io/prototypes/page.css",
+    "sections": {
+    	"myList": {
+        	"hint": {"color": "green","disabled": false},
+            "component": "someList",
+            "events": {
+				"itemSelect": "function(value) { onEvent('myItem', 'showItem', value); }"             
+            }
+        },
+        "myItem": {
+        	"component": "someDetail",
+            "bindEvent": "showItem"
+        },
+        "myItem2": {
+        	"component": "someDetail"
+        }
+    }
+}

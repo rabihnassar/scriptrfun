@@ -1,0 +1,14 @@
+body {
+    background: #eee
+}
+
+.section {
+    padding: 10px;
+}
+
+.item {
+    display: inline-block;
+    width: 150px;
+    padding: 3px;
+    background: #bbb;
+}

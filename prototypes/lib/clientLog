@@ -1,0 +1,12 @@
+
+var clientLog = {
+    content: '',
+    log: function (txt) {
+    	this.content += txt + "\n\r<br>" 
+	},
+    print: function () {
+        return "<code style='color: #2222cc'>"+this.content+"</code>"
+    }
+                 
+}
+
